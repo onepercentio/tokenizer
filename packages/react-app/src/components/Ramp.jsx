@@ -1,6 +1,7 @@
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { RampInstantSDK } from "@ramp-network/ramp-instant-sdk";
-import { Button, Divider, Modal } from "antd";
+import { Modal } from "antd";
+import { Button, Divider } from "@chakra-ui/react";
 import React, { useState } from "react";
 
 // added display of 0 if price={price} is not provided
@@ -54,8 +55,7 @@ export default function Ramp(props) {
   return (
     <div>
       <Button
-        size="large"
-        shape="round"
+        rounded="full"
         onClick={() => {
           setModalUp("up");
         }}
@@ -83,8 +83,6 @@ export default function Ramp(props) {
         <p>
           <Button
             type={type}
-            size="large"
-            shape="round"
             onClick={() => {
               window.open("https://pay.sendwyre.com/purchase?destCurrency=ETH&sourceAmount=25&dest=" + props.address);
             }}
@@ -101,8 +99,6 @@ export default function Ramp(props) {
           {" "}
           <Button
             type={type}
-            size="large"
-            shape="round"
             onClick={() => {
               new RampInstantSDK({
                 hostAppName: "scaffold-eth",
@@ -127,8 +123,7 @@ export default function Ramp(props) {
         <p>
           <Button
             type={type}
-            size="large"
-            shape="round"
+            mb={3}
             onClick={() => {
               window.open("https://www.coinbase.com/buy-ethereum");
             }}

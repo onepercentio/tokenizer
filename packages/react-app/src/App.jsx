@@ -20,11 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import "antd/dist/antd.css";
-import { MailOutlined } from "@ant-design/icons";
 import { getDefaultProvider, InfuraProvider, JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
-import { Row, Col, List, Tabs } from "antd";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import { useUserAddress } from "eth-hooks";
@@ -58,11 +55,6 @@ const targetNetwork = NETWORKS.localhost; // <------- select your target fronten
 
 // 😬 Sorry for all the console logging
 const DEBUG = true;
-
-
-
-const { TabPane } = Tabs;
-
 
 // 🔭 block explorer URL
 const blockExplorer = "https://etherscan.io/" // for xdai: "https://blockscout.com/poa/xdai/"
@@ -270,7 +262,6 @@ function App(props) {
           </Route>
           <Route path="/tokenize">
             <Tokenize
-                props
                 address={address}
                 userProvider={userProvider}
                 mainnetProvider={mainnetProvider}
@@ -318,7 +309,7 @@ function App(props) {
       </BrowserRouter>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-       <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+       <div style={{ position: "fixed", textAlign: "left", right: 0, bottom: 20, padding: 10 }}>
           <HStack mb={2}>
               <Ramp price={price} address={address} />
               <GasGauge gasPrice={gasPrice} />
