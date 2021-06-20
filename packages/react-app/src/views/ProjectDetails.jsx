@@ -41,6 +41,7 @@ return (
           {/* <Button variant="outline" colorScheme="teal" size="lg" mt={4}>Request Tokenization</Button> */}
           <Button variant="outline" colorScheme="teal" size="lg" mt={4} onClick={()=>{
             console.log("mint batch!!!")
+            console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
             tx( writeContracts.BatchContract.mintBatch('0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32', 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
           }}>Create project</Button>
         </Box>
