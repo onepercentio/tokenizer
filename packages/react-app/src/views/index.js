@@ -1,4 +1,5 @@
-export { default as ExampleUI } from "./ExampleUI";
-export { default as Hints } from "./Hints";
-export { default as Subgraph } from "./Subgraph";
+export { default as Tokenize } from "./Tokenize";
+export { default as AccountPage } from "./AccountPage";
+export { default as Landing } from "./Landing";
 export { default as Project } from "./Project";
+export { default as ProjectDetails } from "./ProjectDetails";
