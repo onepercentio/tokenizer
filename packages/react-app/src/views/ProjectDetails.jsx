@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import { Heading, Text, Flex, Box, Button, SimpleGrid, HStack, VStack, Divider } from "@chakra-ui/react";
 import projects from "../verra/projects.js";
 
-export default function ProjectDetails() {
+export default function ProjectDetails({address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
 
   const url = window.location.href.split("/");
   const serialNo = url.pop().split("-");
@@ -43,7 +43,11 @@ return (
             <Text fontWeight="700">Block Id End: {serialNo[2]}</Text>
             <Text fontWeight="700">Project Id: {serialNo[9]}</Text>
           </VStack> */}
-          <Button variant="outline" colorScheme="teal" size="lg" mt={4}>Request Tokenization</Button>
+          {/* <Button variant="outline" colorScheme="teal" size="lg" mt={4}>Request Tokenization</Button> */}
+          <Button variant="outline" colorScheme="teal" size="lg" mt={4} onClick={()=>{
+            console.log("mint batch!!!")
+            tx( writeContracts.BatchContract.mintBatch('0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32', 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
+          }}>Create project</Button>
         </Box>
       </Flex>
     </div>

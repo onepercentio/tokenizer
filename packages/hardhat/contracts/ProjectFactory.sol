@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
 import "hardhat/console.sol";
@@ -39,6 +40,13 @@ contract ProjectFactory is Ownable {
                 IContractRegistry(contractRegistry).projectAddress()
             );
     }
+
+    // function batchContract() private view returns (IBatchContract) {
+    //     return
+    //         IBatchContract(
+    //             IContractRegistry(contractRegistry).projectAddress()
+    //         );
+    // }
 
     function createProject(string memory newProjectName) public {
         // Check if it exists

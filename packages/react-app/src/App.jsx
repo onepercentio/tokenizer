@@ -302,7 +302,17 @@ function App(props) {
             <AccountPage />
           </Route>
           <Route path="/tokenizer/:serialNo">
-            <ProjectDetails />
+            <ProjectDetails 
+            address={address}
+            userProvider={userProvider}
+            mainnetProvider={mainnetProvider}
+            localProvider={localProvider}
+            yourLocalBalance={yourLocalBalance}
+            price={price}
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            />
           </Route>
         </Switch>
       </BrowserRouter>
