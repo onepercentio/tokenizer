@@ -162,10 +162,10 @@ function App(props) {
               {/* {Links.map((link, href) => (
                 <NavLink key={link, href}>{link}</NavLink>
               ))} */}
-              <Link key="/" onClick={()=>{setRoute("/")}} to="/">YourContract</Link>
-              <Link key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">Tokenize</Link>
-              <Link key="/project" onClick={()=>{setRoute("/project")}} to="/project">Project</Link>
-              <Link key="/account" onClick={()=>{setRoute("/account")}} to="/account">Account</Link>
+              <Link key="/" onClick={()=>{setRoute("/")}} to="/">home</Link>
+              <Link key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">tokenize</Link>
+              {/* <Link key="/project" onClick={()=>{setRoute("/project")}} to="/project">project</Link> */}
+              <Link key="/account" onClick={()=>{setRoute("/account")}} to="/account">account</Link>
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
@@ -247,18 +247,7 @@ function App(props) {
 
         <Switch>
           <Route exact path="/">
-            {/*
-                🎛 this scaffolding is full of commonly used components
-                this <Contract/> component will automatically parse your ABI
-                and give you a form to interact with it locally
-            */}
-            <Contract
-              name="YourContract"
-              signer={userProvider.getSigner()}
-              provider={localProvider}
-              address={address}
-              blockExplorer={blockExplorer}
-            />
+            <Landing />
           </Route>
           <Route path="/tokenize">
             <Tokenize
@@ -285,9 +274,6 @@ function App(props) {
                 writeContracts={writeContracts}
                 readContracts={readContracts}
               />
-          </Route>
-          <Route path="/landing">
-            <Landing />
           </Route>
           <Route path="/account">
             <AccountPage />
