@@ -4,12 +4,13 @@ pragma solidity >=0.6.0 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "hardhat/console.sol";
 
 contract BatchContract is ERC721, Ownable {
     event BatchMinted(address sender, string purpose);
 
-    constructor() public ERC721("GameItem", "ITM") {}
+    constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
 
     address public contractRegistry;
 
@@ -22,15 +23,11 @@ contract BatchContract is ERC721, Ownable {
     Counters.Counter private _tokenIds;
     using SafeMath for uint256;
 
-    function sayHi() public pure returns (string memory) {
-        return ("hi");
-    }
 
     function ownerBalanceOf(address owner) public view returns (uint256) {
         uint256 balance = balanceOf(owner);
         console.log("Owner balance is ", balance);
 
-        //https://github.com/pipermerriam/ethereum-string-utils
         return (balance);
     }
 

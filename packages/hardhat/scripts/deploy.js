@@ -10,8 +10,8 @@ const main = async () => {
 
   const yourContract = await deploy("YourContract"); // <-- add in constructor args like line 19 vvvv
 
-  const BatchContract = await deploy("BatchContract");
-  console.log(`BatchContract.address ---> : ${BatchContract.address}`);
+  const BatchCollection = await deploy("BatchCollection");
+  console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
 
   const ProjectContract = await deploy("ProjectContract");
   console.log(`ProjectContract.address ---> : ${ProjectContract.address}`);
@@ -23,7 +23,7 @@ const main = async () => {
   await ProjectFactory.setContractRegistry(ContractRegistry.address);
   console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
 
-  await ContractRegistry.setBatchAddress(BatchContract.address);
+  await ContractRegistry.setBatchAddress(BatchCollection.address);
   await ContractRegistry.setProjectAddress(ProjectContract.address);
   await ContractRegistry.setProjectFactoryAddress(ProjectFactory.address);
 
