@@ -10,6 +10,18 @@ const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
   const yourContract = await deploy("YourContract") // <-- add in constructor args like line 19 vvvv
+  
+  const ProjectContract = await deploy("ProjectContract")
+  console.log(`ProjectContract.address ---> : ${ProjectContract.address}`)
+  const ProjectFactory = await deploy("ProjectFactory")
+  console.log(`ProjectFactory.address ---> : ${ProjectFactory.address}`)
+
+  const ContractRegistry = await deploy("ContractRegistry")
+  await ProjectFactory.setContractRegistry(ContractRegistry.address)
+  console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`)
+
+  await ContractRegistry.setProjectAddress(ProjectContract.address)
+  await ContractRegistry.setProjectFactoryAddress(ProjectFactory.address)
 
   //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!
   //const secondContract = await deploy("SecondContract")
