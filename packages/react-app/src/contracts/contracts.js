@@ -1,1 +1,1 @@
-module.exports = ["BatchContract","ContractRegistry","ProjectContract","ProjectFactory","YourContract"];
+module.exports = ["BatchCollection","ContractRegistry","ProjectContract","ProjectFactory","YourContract"];
