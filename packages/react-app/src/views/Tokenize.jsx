@@ -70,7 +70,7 @@ export default function Tokenize({ props, address, mainnetProvider, userProvider
           inputKind
           ?  
           <><Input placeholder="Enter Serial Number" onChange={onChangeSerialNo}/><br/>
-          e.g: 0001-000001-000100-VCS-VCU-003-VER-US-122-2532-01012020-31122020-1<br/></>
+          e.g: 9344-82392553-82392562-VCS-VCU-262-VER-BR-14-1686-01012017-31122017-1<br/></>
           :
           <Input placeholder="Enter Project Name" onChange={onChangeProjectName} />
           }

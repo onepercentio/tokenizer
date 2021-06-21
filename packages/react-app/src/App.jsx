@@ -29,8 +29,9 @@ import { useExchangePrice, useGasPrice, useUserProvider, useContractLoader, useC
 import { Header, Account, Faucet, Ramp, Contract, GasGauge, Address, Balance, Wallet} from "./components";
 import { Transactor } from "./helpers";
 import { parseEther, formatEther } from "@ethersproject/units";
-import { Tokenize, Landing, AccountPage, Project, ProjectDetails } from "./views"
+import { Tokenize, Admin, Landing, AccountPage, Project, ProjectDetails } from "./views"
 import { DAI_ABI, DAI_ADDRESS, INFURA_ID, NETWORK, NETWORKS } from "./constants";
+import ExampleUI from './views/ExampleUI';
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -51,6 +52,7 @@ import { DAI_ABI, DAI_ADDRESS, INFURA_ID, NETWORK, NETWORKS } from "./constants"
 */
 
 /// 📡 What chain are your contracts deployed to?
+// const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 const targetNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
@@ -262,8 +264,34 @@ function App(props) {
                 readContracts={readContracts}
               />
           </Route>
+          <Route path="/admin">
+            <Admin
+                address={address}
+                userProvider={userProvider}
+                mainnetProvider={mainnetProvider}
+                localProvider={localProvider}
+                yourLocalBalance={yourLocalBalance}
+                price={price}
+                tx={tx}
+                writeContracts={writeContracts}
+                readContracts={readContracts}
+              />
+          </Route>
           <Route path="/project">
             <Project
+                address={address}
+                userProvider={userProvider}
+                mainnetProvider={mainnetProvider}
+                localProvider={localProvider}
+                yourLocalBalance={yourLocalBalance}
+                price={price}
+                tx={tx}
+                writeContracts={writeContracts}
+                readContracts={readContracts}
+              />
+          </Route>
+          <Route path="/exampleui">
+            <ExampleUI
                 address={address}
                 userProvider={userProvider}
                 mainnetProvider={mainnetProvider}
