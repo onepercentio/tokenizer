@@ -12,7 +12,12 @@ contract BatchCollection is ERC721, Ownable {
     using SafeMath for uint256;
 
     event BatchMinted(address sender, string purpose);
+    event BatchRetirementConfirmed(uint256 tokenId);
+    
+    address private _verifier;
+    mapping (uint256 => bool) private _retirementConfirmedStatus;
 
+    
     address public contractRegistry;
     Counters.Counter private _tokenIds;
 
@@ -34,6 +39,16 @@ contract BatchCollection is ERC721, Ownable {
         contractRegistry = _address;
     }
 
+    modifier onlyVerifier() {
+        require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
+        _;
+    }
+
+    function confirmRetirement (uint256 tokenId) public onlyVerifier {
+        require(_exists(tokenId), "ERC721: approved query for nonexistent token");
+        _retirementConfirmedStatus[tokenId] = true;
+        emit BatchRetirementConfirmed(tokenId);
+    }
 
     function getNftData(uint256 tokenId) public view returns (string memory) {
         return nftList[tokenId].vintage;
