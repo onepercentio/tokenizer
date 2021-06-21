@@ -18,9 +18,9 @@ contract BatchCollection is ERC721, Ownable {
 
     // WIP: The fields and naming is subject to change
     struct NFTData {
-        string projectName;
+        string _projectIdentifier;
         string vintage;
-        string symbol;
+        string serialNumber;
         uint256 quantity;
         bool approved;
     }
@@ -64,10 +64,10 @@ contract BatchCollection is ERC721, Ownable {
 
     function mintBatchWithData(
         address to,
-        string memory projectName,
+        string memory projectIdentifier,
         string memory vintage,
-        string memory symbol,
-        uint256 CO2tons)
+        string memory serialNumber,
+        uint256 quantity)
         public
         returns (uint256)
     {
@@ -78,11 +78,12 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        nftList[newItemId].projectName = projectName;
+        nftList[newItemId]._projectIdentifier = projectIdentifier;
         nftList[newItemId].vintage = vintage;
-        nftList[newItemId].symbol = symbol;
-        nftList[newItemId].quantity = CO2tons;
-
+        nftList[newItemId].serialNumber = serialNumber;
+        nftList[newItemId].quantity = quantity;
+        nftList[newItemId].approved = false;
+        
         return newItemId;
     }
 
