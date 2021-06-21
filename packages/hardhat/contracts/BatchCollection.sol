@@ -54,8 +54,6 @@ contract BatchCollection is ERC721, Ownable {
     }
 
 
-
-
     function ownerBalanceOf(address owner) public view returns (uint256) {
         uint256 balance = balanceOf(owner);
         console.log("Owner balance is ", balance);
@@ -64,18 +62,15 @@ contract BatchCollection is ERC721, Ownable {
     }
 
 
-    function mintBatch(address to, string memory tokenURI)
+    function mintBatchWithData(
+        address to,
+        string memory projectName,
+        string memory vintage,
+        string memory symbol,
+        uint256 CO2tons)
         public
         returns (uint256)
     {
-        // console.log(
-        //     "projectFactoryAddress is ",
-        //     IContractRegistry(contractRegistry).projectFactoryAddress()
-        // );
-        // require(
-        //     msg.sender ==
-        //         IContractRegistry(contractRegistry).projectFactoryAddress()
-        // );
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
@@ -83,11 +78,25 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        // // This needs different function parameters
-        // nftList[newItemId].projectName = projectName;
-        // nftList[newItemId].vintage = vintage;
-        // nftList[newItemId].symbol = symbol;
-        // nftList[newItemId].quantity = CO2tons;
+        nftList[newItemId].projectName = projectName;
+        nftList[newItemId].vintage = vintage;
+        nftList[newItemId].symbol = symbol;
+        nftList[newItemId].quantity = CO2tons;
+
+        return newItemId;
+    }
+
+
+    function mintBatch(address to, string memory tokenURI)
+        public
+        returns (uint256)
+    {
+        _tokenIds.increment();
+
+        uint256 newItemId = _tokenIds.current();
+        console.log("minting to ", to);
+        console.log("newItemId is ", newItemId);
+        _safeMint(to, newItemId);
 
         // _setTokenURI(newItemId, tokenURI);
         emit BatchMinted(to, tokenURI);
