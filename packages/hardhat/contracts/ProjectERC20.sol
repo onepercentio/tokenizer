@@ -9,9 +9,15 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
+import "./IContractRegistry.sol";
+
 
 contract Collection {
-    function getNftData(uint256 tokenId) public view returns (string memory) {}    
+    function getProjectIdent(uint256 tokenId) public view returns (string memory) {}   
+
+    function getQuantity(uint256 tokenId) public view returns (uint) {}    
+
+    
 }
 
 contract ProjectERC20 is Context, ERC20, IERC721Receiver {
@@ -29,20 +35,27 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     string private _symbol;
     string public vintage;
     string public projectIdentifier;
-
+    address public contractRegistry;
 
 
     constructor (
         string memory name_, 
         string memory symbol_,
         string memory _projectIdentifier,
-        string memory _vintage
+        string memory _vintage,
+        address _contractRegistry
         ) ERC20(name_, symbol_) {
         _name = name_;
         _symbol = symbol_;
         projectIdentifier = _projectIdentifier;
         vintage = _vintage;
+        contractRegistry = _contractRegistry;
     }
+
+    // // onlyOwner
+    // function setContractRegistry(address _address) public onlyOwner {
+    //     contractRegistry = _address;
+    // }
 
     /**
      * @dev function is called with `operator` as `_msgSender()` in a reference implementation by OZ
@@ -61,16 +74,28 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: address msg.sender:", msg.sender);
         console.log("DEBUG sol: address _msgSender():", _msgSender());
 
+        // probably best to check via:
+        // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
+
         require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
         require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
 
         minterToId[from] = tokenId;
+
+        uint quantity = Collection(msg.sender).getQuantity(tokenId);
+        _mint(from, quantity);
         return this.onERC721Received.selector;
 
     }
 
     // Check if BatchCollection is whitelisted (official)
     function checkWhiteListed(address collection) internal view returns (bool) {
+        if (collection == IContractRegistry(contractRegistry).batchCollectionAddress()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -80,10 +105,10 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
         console.log("DEBUG sol: _checkMatchingAttributes called");
-        console.log(Collection(collection).getNftData(tokenId));
-        console.log(vintage);
+        // console.log(Collection(collection).getProjectIdent(tokenId));
+        // console.log(projectIdentifier);
 
-        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getNftData(tokenId)));
+        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
 
         if (pid20 == pid721) { 

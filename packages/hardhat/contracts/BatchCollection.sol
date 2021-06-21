@@ -17,11 +17,15 @@ contract BatchCollection is ERC721, Ownable {
     address private _verifier;
     mapping (uint256 => bool) private _retirementConfirmedStatus;
 
-    
+
+
+
+
     address public contractRegistry;
     Counters.Counter private _tokenIds;
 
     // WIP: The fields and naming is subject to change
+    // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
         string projectIdentifier;
         string vintage;
@@ -50,8 +54,12 @@ contract BatchCollection is ERC721, Ownable {
         emit BatchRetirementConfirmed(tokenId);
     }
 
-    function getNftData(uint256 tokenId) public view returns (string memory) {
+    function getProjectIdent(uint256 tokenId) public view returns (string memory) {
         return nftList[tokenId].projectIdentifier;
+    }
+
+    function getQuantity(uint256 tokenId) public view returns (uint) {
+        return nftList[tokenId].quantity;
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js

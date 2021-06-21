@@ -16,7 +16,8 @@ contract ProjectERC20Factory {
         string memory _name, 
         string memory _symbol,
         string memory _projectIdentifier,
-        string memory _vintage) 
+        string memory _vintage,
+        address _contractRegistry) 
     public {
         // console.log("DEBUG: deploying new pERC20");
 
@@ -25,7 +26,7 @@ contract ProjectERC20Factory {
         // Necessary to avoid two of the same project-tokens being deployed with differing symbol/name
         require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
 
-        ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage);
+        ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage, _contractRegistry);
         deployedContracts.push(address(t));
         // console.log("DEBUG: Deployed new pERC20 at ", address(t));
         pContractRegistry[_pTokenIdentifier] = address(t);
