@@ -17,9 +17,8 @@ export default function Admin({
   readContracts,
   writeContracts,
 }) {
-  
   // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "BatchContract", "purpose");
+  const purpose = useContractReader(readContracts, "BatchCollection", "purpose");
   console.log("🤗 !! purpose:", purpose);
 
   // const ownerBalanceOf = useContractReader(readContracts,"ProjectContract", "ownerBalanceOf", ["0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32"])
