@@ -31,7 +31,7 @@ contract BatchCollection is ERC721, Ownable {
         string vintage;
         string serialNumber;
         uint256 quantity;
-        bool approved;
+        bool confirmed;
     }
 
     mapping (uint256 => NFTData) public nftList;
@@ -105,7 +105,7 @@ contract BatchCollection is ERC721, Ownable {
         nftList[newItemId].vintage = _vintage;
         nftList[newItemId].serialNumber = _serialNumber;
         nftList[newItemId].quantity = quantity;
-        nftList[newItemId].approved = false;
+        nftList[newItemId].confirmed = false;
         
         return newItemId;
     }

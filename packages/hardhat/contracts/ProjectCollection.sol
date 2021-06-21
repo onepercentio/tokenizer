@@ -19,9 +19,8 @@ contract ProjectCollection is ERC721, Ownable {
     struct ProjectData {
         string _projectIdentifier;
         string vintage;
-        string serialNumber;
-        uint256 quantity;
-        bool approved;
+        string metaDataHash;
+        string tokenURI;
     }
 
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
