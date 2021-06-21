@@ -16,12 +16,16 @@ contract ProjectCollection is ERC721, Ownable {
     Counters.Counter private _tokenIds;
 
     // WIP: The fields and naming is subject to change
+    // MetaData could contain attributes like dates, country, region, standard etc.
     struct ProjectData {
-        string _projectIdentifier;
-        string vintage;
+        string projectIdentifier;
         string metaDataHash;
         string tokenURI;
+        address controller; // could be a multisig that can change project data
     }
+
+    mapping (uint256 => ProjectData) public projects;
+
 
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
 
@@ -30,7 +34,12 @@ contract ProjectCollection is ERC721, Ownable {
     }
 
 
-    function mintProject(address to, string memory tokenURI)
+    function mintProject(
+        address to,
+        string memory _projectIdentifier,
+        string memory _metaDataHash,
+        string memory _tokenURI,
+        )
         public
         returns (uint256)
     {
@@ -41,6 +50,11 @@ contract ProjectCollection is ERC721, Ownable {
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
         _mint(to, newItemId);
+
+        projects[newItemId].projectIdentifier = _projectIdentifier;
+        projects[newItemId].metaDataHash = _metaDataHash;
+        projects[newItemId].tokenURI = _tokenURI;
+
         // _setTokenURI(newItemId, tokenURI);
         emit ProjectMinted(to, tokenURI);
         return newItemId;
