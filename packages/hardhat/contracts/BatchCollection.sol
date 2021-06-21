@@ -23,7 +23,7 @@ contract BatchCollection is ERC721, Ownable {
 
     // WIP: The fields and naming is subject to change
     struct NFTData {
-        string _projectIdentifier;
+        string projectIdentifier;
         string vintage;
         string serialNumber;
         uint256 quantity;
@@ -51,7 +51,7 @@ contract BatchCollection is ERC721, Ownable {
     }
 
     function getNftData(uint256 tokenId) public view returns (string memory) {
-        return nftList[tokenId].vintage;
+        return nftList[tokenId].projectIdentifier;
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
@@ -79,9 +79,9 @@ contract BatchCollection is ERC721, Ownable {
 
     function mintBatchWithData(
         address to,
-        string memory projectIdentifier,
-        string memory vintage,
-        string memory serialNumber,
+        string memory _projectIdentifier,
+        string memory _vintage,
+        string memory _serialNumber,
         uint256 quantity)
         public
         returns (uint256)
@@ -93,9 +93,9 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        nftList[newItemId]._projectIdentifier = projectIdentifier;
-        nftList[newItemId].vintage = vintage;
-        nftList[newItemId].serialNumber = serialNumber;
+        nftList[newItemId].projectIdentifier = _projectIdentifier;
+        nftList[newItemId].vintage = _vintage;
+        nftList[newItemId].serialNumber = _serialNumber;
         nftList[newItemId].quantity = quantity;
         nftList[newItemId].approved = false;
         
@@ -114,7 +114,6 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        // _setTokenURI(newItemId, tokenURI);
         emit BatchMinted(to, tokenURI);
         return newItemId;
     }

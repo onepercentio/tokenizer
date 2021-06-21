@@ -61,11 +61,16 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: address msg.sender:", msg.sender);
         console.log("DEBUG sol: address _msgSender():", _msgSender());
 
-        require(_checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
+        require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
+        require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
 
         minterToId[from] = tokenId;
         return this.onERC721Received.selector;
 
+    }
+
+    // Check if BatchCollection is whitelisted (official)
+    function checkWhiteListed(address collection) internal view returns (bool) {
     }
 
     /**
@@ -73,15 +78,15 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      *  @param collection is the address of the ERC721 collection the NFT was sent from
      *  @param tokenId is the tokenId that shall be checked
      **/
-    function _checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
+    function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
         console.log("DEBUG sol: _checkMatchingAttributes called");
         console.log(Collection(collection).getNftData(tokenId));
         console.log(vintage);
 
-        bytes32 nft = keccak256(abi.encodePacked(Collection(collection).getNftData(tokenId)));
-        bytes32 erc = keccak256(abi.encodePacked(vintage));
+        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getNftData(tokenId)));
+        bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
 
-        if (erc == nft) { 
+        if (pid20 == pid721) { 
             return true;
         }
         else {

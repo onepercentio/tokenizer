@@ -7,17 +7,24 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./IContractRegistry.sol";
 import "hardhat/console.sol";
 
-contract ProjectContract is ERC721, Ownable {
-
+contract ProjectCollection is ERC721, Ownable {
     using Counters for Counters.Counter;
 
     event ProjectMinted(address sender, string purpose);
 
-    Counters.Counter private _tokenIds;
     address public contractRegistry;
+    Counters.Counter private _tokenIds;
 
+    // WIP: The fields and naming is subject to change
+    struct ProjectData {
+        string _projectIdentifier;
+        string vintage;
+        string serialNumber;
+        uint256 quantity;
+        bool approved;
+    }
 
-    constructor() public ERC721("ProjectCollection", "Offset-Projects") {}
+    constructor() ERC721("ProjectCollection", "Offset-Projects") {}
 
     function setContractRegistry(address _address) public onlyOwner {
         contractRegistry = _address;
