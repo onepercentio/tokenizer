@@ -21,7 +21,7 @@ const main = async () => {
   await ProjectFactory.setContractRegistry(ContractRegistry.address);
   console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
 
-  await ContractRegistry.setBatchAddress(BatchCollection.address);
+  await ContractRegistry.setBatchAddress(BatchContract.address);
   await ContractRegistry.setProjectAddress(ProjectContract.address);
   await ContractRegistry.setProjectFactoryAddress(ProjectFactory.address);
 
