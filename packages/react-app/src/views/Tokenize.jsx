@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import {AppContainer, Container} from "./styles/Tokenize"
 import { Button} from "./styles/Landing"
 
-export default function Tokenize({ props, address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
+export default function Tokenize({ address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
 
   const [newProject, setNewProject] = useState("loading...");
 
