@@ -12,7 +12,6 @@ export const AppContainer = styled.div`
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  width: 30%;
   margin: auto;
   margin-top: 10%;
   margin-bottom: 10%;

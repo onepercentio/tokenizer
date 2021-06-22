@@ -14,31 +14,61 @@ export default function AccountPage({
   readContracts,
   writeContracts,
 }) {
-
   const ownerBalanceOf = useContractReader(readContracts, "BatchCollection", "ownerBalanceOf", [address]);
   const userBatches = useContractReader(readContracts, "BatchCollection", "tokensOfOwner", [address]);
   console.log("userBatches are:", userBatches);
 
   return (
     <div>
-
-      <Container>
-      <Heading marginTop="10%" fontFamily="Poppins" align="left" fontSize="14" fontWeight="400">View your minted NFTs</Heading>
+      <Container maxW="container.lg">
+        <Heading marginTop="10%" fontFamily="Poppins" align="left" fontSize="14" fontWeight="400">
+          Your tokenized retirement claims
+        </Heading>
         <AccountContainer>
-          <Heading fontSize="26" fontWeight="400" mt={5} fontFamily="Poppins">You have <span style={{color:"#00F6AA"}}>{ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0}</span> NFTs</Heading>
-            {userBatches && userBatches.length ? userBatches.map(batch => 
-            <>
-            <SimpleGrid>
-            <Box fontFamily="Cousine">
-                <Text align="left">Resource Identifier: {batch[0]}</Text>
-                <Text align="left">Vintage: {batch[1]}</Text>
-                <Text align="left">Serial Number: {batch[2]}</Text>
-                <Text align="left">Quantity: {parseInt(batch[3]._hex, 16)}</Text>
-            </Box>
-            </SimpleGrid>
-            <Divider />
-            </>) : null}
-          
+          <Heading fontSize="26" fontWeight="400" mt={5} fontFamily="Poppins">
+            You have{" "}
+            <span style={{ color: "#00F6AA" }}>
+              {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0}
+            </span>{" "}
+            retirement claims
+          </Heading>
+          {userBatches && userBatches.length
+            ? userBatches.map(batch => (
+                <>
+                  <br/>
+                  <br/>
+                  <SimpleGrid columns={2} spacing={10}>
+                    <Box align="right" fontWeight="bold">
+                      Resource Identifier:
+                    </Box>
+                    <Box align="left">{batch[0]}</Box>
+                    <Box align="right" fontWeight="bold">
+                      Status:
+                    </Box>
+                    <Box align="left" color="red">unconfirmed</Box>
+                    
+                    <Box align="right" fontWeight="bold">
+                      Vintage:
+                    </Box>
+                    <Box align="left">{batch[1]}</Box>
+                    <Box align="right" fontWeight="bold">
+                      Serial Number:
+                    </Box>
+                    <Box>{batch[2]}</Box>
+                    <Box align="right" fontWeight="bold">
+                      Quantity:
+                    </Box>
+                    <Box align="left">
+                      {batch[3] && typeof batch[3] !== "undefined" ? parseInt(batch[3]._hex, 16) : ""}
+                    </Box>
+
+                    
+                    <br/>
+                  </SimpleGrid>
+                  <Divider />
+                </>
+              ))
+            : null}
         </AccountContainer>
       </Container>
     </div>

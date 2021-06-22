@@ -1,6 +1,24 @@
 const projects = [
   {
     "program": "Verified Carbon Standard",
+    "resourceIdentifier": "1418",
+    "resourceName": "Renewable Energy Project by LNB Group",
+    "proponent": "Renewable Energy Project by LNB Group",
+    "operator": null,
+    "designee": null,
+    "protocolCategories": "Renewable",
+    "resourceStatus": "Registered",
+    "country": "Colombia",
+    "estAnnualEmissionReductions": 29404,
+    "region": "Latin America",
+    "version": "VCS Version 3",
+    "protocols": "AR-ACM0003",
+    "compatibleProgramScenarioTypeName": null,
+    "inputTypes": null,
+    "createDate": "2021-06-03"
+  },
+  {
+    "program": "Verified Carbon Standard",
     "resourceIdentifier": "1686",
     "resourceName": "Cumare carbon project",
     "proponent": "Reforestadora Cumare S.A.S.",
