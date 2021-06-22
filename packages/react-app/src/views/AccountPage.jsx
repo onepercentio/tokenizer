@@ -1,7 +1,7 @@
 import React from "react";
 import { Heading, Flex, Box, SimpleGrid, Divider, Text } from "@chakra-ui/react";
 import { useContractReader, useEventListener, useResolveName } from "../hooks";
-import { AppContainer, Container } from "./styles/Tokenize";
+import { AccountContainer, Container } from "./styles/Tokenize";
 
 export default function AccountPage({
   address,
@@ -21,10 +21,11 @@ export default function AccountPage({
 
   return (
     <div>
+
       <Container>
-        <AppContainer>
-          <Heading fontFamily="Poppins">You have {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0} NFTs</Heading>
-          
+      <Heading marginTop="10%" fontFamily="Poppins" align="left" fontSize="14" fontWeight="400">View your minted NFTs</Heading>
+        <AccountContainer>
+          <Heading fontSize="26" fontWeight="400" mt={5} fontFamily="Poppins">You have <span style={{color:"#00F6AA"}}>{ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0}</span> NFTs</Heading>
             {userBatches && userBatches.length ? userBatches.map(batch => 
             <>
             <SimpleGrid>
@@ -38,7 +39,7 @@ export default function AccountPage({
             <Divider />
             </>) : null}
           
-        </AppContainer>
+        </AccountContainer>
       </Container>
     </div>
   );
