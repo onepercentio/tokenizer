@@ -18,9 +18,6 @@ contract BatchCollection is ERC721, Ownable {
     mapping (uint256 => bool) private _retirementConfirmedStatus;
 
 
-
-
-
     address public contractRegistry;
     Counters.Counter private _tokenIds;
 

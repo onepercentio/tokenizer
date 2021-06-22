@@ -38,7 +38,7 @@ contract ProjectCollection is ERC721, Ownable {
         address to,
         string memory _projectIdentifier,
         string memory _metaDataHash,
-        string memory _tokenURI,
+        string memory _tokenURI
         )
         public
         returns (uint256)
@@ -56,7 +56,7 @@ contract ProjectCollection is ERC721, Ownable {
         projects[newItemId].tokenURI = _tokenURI;
 
         // _setTokenURI(newItemId, tokenURI);
-        emit ProjectMinted(to, tokenURI);
+        emit ProjectMinted(to, _tokenURI);
         return newItemId;
     }
 }
