@@ -20,46 +20,47 @@ describe("", () => {
         // Create Blockchain Accounts
         [acc1, project, acc3, ...addrs] = await ethers.getSigners();
         console.log("\n------ ACCOUNTs --------")
-        console.log("acc1 address:", acc1.address);
-        console.log("project address:", project.address);
+        console.log("Account 1:", acc1.address);
+        console.log("Project:", project.address);
         console.log("-------------\n")
-
-        rawMsg = await acc1.signMessage("Retiring Serial No: 123");
-        console.log("Logging signed message:", rawMsg);
 
 // ---------------------
         // BatchNFT minting
-        console.log("\n----Deploying BatchCollection:");
+        console.log("\n----\nDeploying BatchCollection...");
         factory = await ethers.getContractFactory("BatchCollection");
         NFTcontract = await factory.deploy();
-        console.log("\n----BatchCollection address:");
+        console.log("\nBatchCollection address:");
         console.log(NFTcontract.address);
+        console.log("\nConnecting Project Account and mint Batch-NFT...");
         await NFTcontract.connect(project).mintBatchWithData(project.address, projectIdentifier, "2016", serialNumber, 1000);
 
 
-        name = "ProjectTreez"; 
-        symbol = "CO-GS-16";
-        vintage = "2016";
+
     
 // ---------------------
         // Deploying ContractRegistry
-        console.log("\n----Deploying ContractRegistry:");
+        console.log("\n----\nDeploying ContractRegistry...");
         factory = await ethers.getContractFactory("ContractRegistry");
         registryC = await factory.deploy();
-        console.log("\n----registry address:");
-        console.log(registryC.address);
+        console.log("Registry address:", registryC.address);
+        console.log(`setBatchCollectionAddress(${NFTcontract.address})`);
 
         await registryC.setBatchCollectionAddress(NFTcontract.address);
         
 // ---------------------
         // Deploying ProjectERC20Factory
-        console.log("\n----Deploying ProjectERC20Factory:");
+        console.log("\n----\nDeploying ProjectERC20Factory:");
         factory = await ethers.getContractFactory("ProjectERC20Factory");  
         FactoryContract = await factory.deploy();
 
-        // console.log("Deploying pERC20 token:")
+        name = "ProjectTreez"; 
+        symbol = "CO-GS-16";
+        vintage = "2016";
+
+        console.log("Deploy new ProjectERC20 token via ProjectERC20Factory...");
+
         await FactoryContract.deployNewToken(name, symbol, projectIdentifier, vintage, registryC.address);
-        await FactoryContract.deployNewToken(name, symbol, projectIdentifier2, vintage, registryC.address);
+        // await FactoryContract.deployNewToken(name, symbol, projectIdentifier2, vintage, registryC.address);
 
         response = await FactoryContract.getContracts();
         console.log("logging getContracts()", response);
@@ -73,11 +74,12 @@ describe("", () => {
 
 // ---------------------
         // Sending BatchNFTs to pERC20 contract
-        console.log("\n----Sending BatchNFTs:");
+
         console.log("balance project:", await NFTcontract.balanceOf(project.address));
         console.log("balance acc1:", await NFTcontract.balanceOf(acc1.address));
         console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
 
+        console.log("\n----Sending BatchNFT from Project to Account 1:");
         await NFTcontract.connect(project).transferFrom(project.address, acc1.address, 1);
         // await NFTcontract.connect(project).safeTransferFrom(project.address, acc1.address, 1);
 
@@ -85,6 +87,7 @@ describe("", () => {
         console.log("balance acc1:", await NFTcontract.balanceOf(acc1.address));
         console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
 
+        console.log("\n----Sending BatchNFT from Account 1 to pERC20 contract:");
         await NFTcontract.connect(acc1).transferFrom(acc1.address, response[0], 1);
 
         console.log("balance project:", await NFTcontract.balanceOf(project.address));
