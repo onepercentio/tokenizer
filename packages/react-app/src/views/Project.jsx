@@ -39,13 +39,14 @@ function Project({
 
   return (
     <div>
+
       <SimpleGrid columns={3} spacing="10px">
         <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={["auto", "45%"]}>
           <Heading as="h3" size="lg" mb="2">
             Tokenizer
           </Heading>
           <div>
-            <Input
+            <Input fontFamily="Cousine"
               onChange={e => {
                 setNewProject(e.target.value);
               }}

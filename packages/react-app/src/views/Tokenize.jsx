@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Heading, Text, Flex, Box, Button, Input, Divider, Stack, Switch, Center } from "@chakra-ui/react";
+import {  Text, Flex, Box, Input, Divider, Stack, Switch, Center } from "@chakra-ui/react";
 import { useContractReader, useEventListener, useResolveName } from "../hooks";
 import { parseEther, formatEther } from "@ethersproject/units";
 import { useHistory } from "react-router-dom";
+import {AppContainer, Container} from "./styles/Tokenize"
+import { Button} from "./styles/Landing"
 
-export default function Tokenize({ props, address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
+export default function Tokenize({ address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
 
   const [newProject, setNewProject] = useState("loading...");
 
@@ -52,13 +54,14 @@ export default function Tokenize({ props, address, mainnetProvider, userProvider
   }
 
   return (
-    <div>
-      <Center>
+    <div  > 
+      <Container>
       {/* <Flex align="center" justify="center" height="50vh" direction="column"> */}
-        <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">
+        {/* <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg"> */}
+         <AppContainer>
           <Stack direction={["column", "row"]} mb={2} align="left">
-            <Text>Tokenize your</Text>
-            <Text color="teal" fontWeight="700">Carbon Credits</Text>
+            <Text fontSize="20px">Tokenize your</Text>
+            <Text fontSize="20px" color="#00F6AA" >Carbon Credits</Text>
           </Stack>
           <Divider />
           <Stack direction={["column", "row"]} mt={4} mb={4}>
@@ -69,15 +72,17 @@ export default function Tokenize({ props, address, mainnetProvider, userProvider
           {
           inputKind
           ?  
-          <><Input placeholder="Enter Serial Number" onChange={onChangeSerialNo}/><br/>
+          <><Input fontFamily="Cousine" placeholder="Enter Serial Number" onChange={onChangeSerialNo}/><br/>
           e.g: 9344-82392553-82392562-VCS-VCU-262-VER-BR-14-1686-01012017-31122017-1<br/></>
           :
           <Input placeholder="Enter Project Name" onChange={onChangeProjectName} />
           }
-          <Button variant="outline" colorScheme="teal" size="lg" mt={4} onClick={takeToTokenization}>Continue</Button>
-        </Box>
+          <Button onClick={takeToTokenization}>Continue</Button>
+          {/* <Button variant="outline" colorScheme="teal" size="lg" mt={4} onClick={takeToTokenization}>Continue</Button> */}
+          </AppContainer>
+        {/* </Box> */}
       {/* </Flex> */}
-      </Center>
+      </Container>
 
       {/* <Flex align="center" justify="center" height="70vh" direction="column">
         <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">

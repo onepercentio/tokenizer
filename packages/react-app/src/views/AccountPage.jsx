@@ -1,20 +1,45 @@
 import React from "react";
-import { Flex, Box, SimpleGrid } from "@chakra-ui/react";
+import { Heading, Flex, Box, SimpleGrid, Divider, Text } from "@chakra-ui/react";
+import { useContractReader, useEventListener, useResolveName } from "../hooks";
+import { AppContainer, Container } from "./styles/Tokenize";
 
-export default function AccountPage() {
-  
-return (
+export default function AccountPage({
+  address,
+  mainnetProvider,
+  userProvider,
+  localProvider,
+  yourLocalBalance,
+  price,
+  tx,
+  readContracts,
+  writeContracts,
+}) {
+
+  const ownerBalanceOf = useContractReader(readContracts, "BatchCollection", "ownerBalanceOf", [address]);
+  const userBatches = useContractReader(readContracts, "BatchCollection", "tokensOfOwner", [address]);
+  console.log("userBatches are:", userBatches);
+
+  return (
     <div>
-      <Flex align="center" justify="center" height="70vh" direction="column">
-        <SimpleGrid columns={3}>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-        </SimpleGrid>
-      </Flex>
+      <Container>
+        <AppContainer>
+          <Heading fontFamily="Poppins">You have {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0} NFTs</Heading>
+          
+            {userBatches && userBatches.length ? userBatches.map(batch => 
+            <>
+            <SimpleGrid>
+            <Box fontFamily="Cousine">
+                <Text align="left">Resource Identifier: {batch[0]}</Text>
+                <Text align="left">Vintage: {batch[1]}</Text>
+                <Text align="left">Serial Number: {batch[2]}</Text>
+                <Text align="left">Quantity: {parseInt(batch[3]._hex, 16)}</Text>
+            </Box>
+            </SimpleGrid>
+            <Divider />
+            </>) : null}
+          
+        </AppContainer>
+      </Container>
     </div>
   );
 }

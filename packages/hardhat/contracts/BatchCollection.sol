@@ -3,11 +3,12 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "hardhat/console.sol";
 
-contract BatchCollection is ERC721, Ownable {
+contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
@@ -17,6 +18,9 @@ contract BatchCollection is ERC721, Ownable {
     address private _verifier;
     mapping (uint256 => bool) private _retirementConfirmedStatus;
 
+    /// @dev A mapping from batchs IDs to the address that owns them. All batches have
+    ///  some valid owner address from the point of minting, then transfer
+    mapping (uint256 => address) public batchIndexToOwner;
 
     address public contractRegistry;
     Counters.Counter private _tokenIds;
@@ -81,7 +85,49 @@ contract BatchCollection is ERC721, Ownable {
         return (balance);
     }
 
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, amount);
+    }
 
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    /// @notice Returns a list of all BatchIDs assigned to an address.
+    /// @param _owner The owner whose Kitties we are interested in.
+    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
+    ///  expensive (it walks the entire Batch array looking for cats belonging to owner),
+    ///  but it also returns a dynamic array, which is only supported for web3 calls, and
+    ///  not contract-to-contract calls.
+    function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
+        uint256 tokenCount = balanceOf(_owner);
+
+        if (tokenCount == 0) 
+        {
+            // Return an empty array
+            return new NFTData[](0);
+        } 
+
+        else 
+        {
+            NFTData[] memory result = new NFTData[](tokenCount);
+            uint256 totalNfts = totalSupply();
+            uint256 resultIndex = 0;
+
+            // We count on the fact that all nfts have IDs starting at 1 and increasing
+            // sequentially up to the totalNfts count.
+            uint256 nftId;
+
+            for (nftId = 1; nftId <= totalNfts; nftId++) {
+                if (batchIndexToOwner[nftId] == _owner) {
+                    result[resultIndex] = nftList[nftId];
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+    }
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
@@ -96,6 +142,7 @@ contract BatchCollection is ERC721, Ownable {
         uint256 newItemId = _tokenIds.current();
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
+        batchIndexToOwner[newItemId] = to;
         _safeMint(to, newItemId);
 
         nftList[newItemId].projectIdentifier = _projectIdentifier;
@@ -117,9 +164,11 @@ contract BatchCollection is ERC721, Ownable {
         uint256 newItemId = _tokenIds.current();
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
-        _safeMint(to, newItemId);
 
+        batchIndexToOwner[newItemId] = to;
         emit BatchMinted(to, tokenURI);
+        _safeMint(to, newItemId);
+        
         return newItemId;
     }
 }
