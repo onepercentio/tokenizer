@@ -15,17 +15,18 @@ contract ProjectERC20Factory {
     function deployNewToken(
         string memory _name, 
         string memory _symbol,
+        string memory _projectIdentifier,
         string memory _vintage,
-        string memory _standard,
-        string memory _country) 
+        address _contractRegistry) 
     public {
         // console.log("DEBUG: deploying new pERC20");
 
-        string memory _pTokenIdentifier = append(_name, _symbol, _vintage, _standard, _country);
+        string memory _pTokenIdentifier = append(_name, _symbol, _projectIdentifier, _vintage);
         // console.log(_pTokenIdentifier);
+        // Necessary to avoid two of the same project-tokens being deployed with differing symbol/name
         require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
 
-        ProjectERC20 t = new ProjectERC20(_name, _symbol, _vintage, _standard, _country);
+        ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage, _contractRegistry);
         deployedContracts.push(address(t));
         // console.log("DEBUG: Deployed new pERC20 at ", address(t));
         pContractRegistry[_pTokenIdentifier] = address(t);
@@ -39,9 +40,9 @@ contract ProjectERC20Factory {
 
 
     // Helper function to create unique pERC20 identifying string
-    function append(string memory a, string memory b, string memory c, string memory d, string memory e) 
+    function append(string memory a, string memory b, string memory c, string memory d) 
         internal pure returns (string memory)  {
-        return string(abi.encodePacked(a, b, c, d, e));
+        return string(abi.encodePacked(a, b, c, d));
     }
 
 

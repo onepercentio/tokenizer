@@ -17,17 +17,18 @@ contract BatchCollection is ERC721, Ownable {
     address private _verifier;
     mapping (uint256 => bool) private _retirementConfirmedStatus;
 
-    
+
     address public contractRegistry;
     Counters.Counter private _tokenIds;
 
     // WIP: The fields and naming is subject to change
+    // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
-        string projectName;
+        string projectIdentifier;
         string vintage;
-        string symbol;
+        string serialNumber;
         uint256 quantity;
-        bool approved;
+        bool confirmed;
     }
 
     mapping (uint256 => NFTData) public nftList;
@@ -50,8 +51,12 @@ contract BatchCollection is ERC721, Ownable {
         emit BatchRetirementConfirmed(tokenId);
     }
 
-    function getNftData(uint256 tokenId) public view returns (string memory) {
-        return nftList[tokenId].vintage;
+    function getProjectIdent(uint256 tokenId) public view returns (string memory) {
+        return nftList[tokenId].projectIdentifier;
+    }
+
+    function getQuantity(uint256 tokenId) public view returns (uint) {
+        return nftList[tokenId].quantity;
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
@@ -79,10 +84,10 @@ contract BatchCollection is ERC721, Ownable {
 
     function mintBatchWithData(
         address to,
-        string memory projectName,
-        string memory vintage,
-        string memory symbol,
-        uint256 CO2tons)
+        string memory _projectIdentifier,
+        string memory _vintage,
+        string memory _serialNumber,
+        uint256 quantity)
         public
         returns (uint256)
     {
@@ -93,11 +98,12 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        nftList[newItemId].projectName = projectName;
-        nftList[newItemId].vintage = vintage;
-        nftList[newItemId].symbol = symbol;
-        nftList[newItemId].quantity = CO2tons;
-
+        nftList[newItemId].projectIdentifier = _projectIdentifier;
+        nftList[newItemId].vintage = _vintage;
+        nftList[newItemId].serialNumber = _serialNumber;
+        nftList[newItemId].quantity = quantity;
+        nftList[newItemId].confirmed = false;
+        
         return newItemId;
     }
 
@@ -113,7 +119,6 @@ contract BatchCollection is ERC721, Ownable {
         console.log("newItemId is ", newItemId);
         _safeMint(to, newItemId);
 
-        // _setTokenURI(newItemId, tokenURI);
         emit BatchMinted(to, tokenURI);
         return newItemId;
     }
