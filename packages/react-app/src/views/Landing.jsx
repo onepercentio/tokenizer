@@ -1,17 +1,19 @@
 import React from "react";
-import { Heading, Text, Flex, Box, Button } from "@chakra-ui/react";
+import { Text, Flex, Box } from "@chakra-ui/react";
+import {Button, Heading, SubHeading} from "./styles/Landing"
+import { ArrowForwardIcon } from '@chakra-ui/icons'
 
 export default function Landing() {
   
 return (
     <div>
-      <Flex align="center" justify="center" height="70vh" direction="column">
+      <Flex align="center" justify="center" height="80vh" direction="column">
         <Box>
-          <Text> - labore </Text>
-          <Heading as="h3" size="lg" mb={4}>Lorem ipsum dolor</Heading>
-          <Text>sed do eiusmod tempor incididunt ut labore</Text>
-          <Text>et dolore magna aliqua</Text>
-          <Button colorScheme="blackAlpha" mb={4} mt={6}>Get started &rarr;</Button>
+          <Text fontFamily="Cousine"> - beta </Text>
+        {/* title needs to change */}
+          <Heading as="h3" size="lg" mb={4}>Tokenize your Carbon Credits</Heading>
+          <SubHeading>Join us in creating a carbon neutral Web3 and beyond</SubHeading>
+          <Button>Get Started <ArrowForwardIcon/></Button>
         </Box>
       </Flex>
     </div>
