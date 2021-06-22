@@ -99,14 +99,18 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     ///  expensive (it walks the entire Batch array looking for cats belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
-    function tokensOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
+    function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
-        if (tokenCount == 0) {
+        if (tokenCount == 0) 
+        {
             // Return an empty array
-            return new uint256[](0);
-        } else {
-            uint256[] memory result = new uint256[](tokenCount);
+            return new NFTData[](0);
+        } 
+
+        else 
+        {
+            NFTData[] memory result = new NFTData[](tokenCount);
             uint256 totalNfts = totalSupply();
             uint256 resultIndex = 0;
 
@@ -116,7 +120,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
             for (nftId = 1; nftId <= totalNfts; nftId++) {
                 if (batchIndexToOwner[nftId] == _owner) {
-                    result[resultIndex] = nftId;
+                    result[resultIndex] = nftList[nftId];
                     resultIndex++;
                 }
             }
@@ -138,6 +142,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         uint256 newItemId = _tokenIds.current();
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
+        batchIndexToOwner[newItemId] = to;
         _safeMint(to, newItemId);
 
         nftList[newItemId].projectIdentifier = _projectIdentifier;

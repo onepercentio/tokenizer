@@ -51,10 +51,16 @@ return (
             console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
             tx( writeContracts.BatchCollection.mintBatch('0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32', 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
           }}>Create project</Button> */}
-          <Button onClick={()=>{
+          {/* <Button onClick={()=>{
             console.log("mint batch!!!")
             console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
             tx( writeContracts.BatchCollection.mintBatch(address, 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
+          }}>Create project</Button> */}
+
+          <Button onClick={()=>{
+            console.log("mint batch!!!")
+            console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
+            tx( writeContracts.BatchCollection.mintBatchWithData(address, project["resourceIdentifier"], "Sample Vintage", serialNo.join("-"), project["estAnnualEmissionReductions"]) )
           }}>Create project</Button>
         {/* </Box> */}
       {/* </Flex> */}
