@@ -1,5 +1,6 @@
 import React from "react";
 import { Heading, Text, Flex, Box, SimpleGrid, Stack, Divider, Center } from "@chakra-ui/react";
+import { useContractReader, useEventListener, useResolveName } from "../hooks";
 import projects from "../verra/projects.js";
 import {AppContainer, Container} from "./styles/Tokenize"
 import {Button} from "./styles/Landing"
@@ -53,7 +54,7 @@ return (
           <Button onClick={()=>{
             console.log("mint batch!!!")
             console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
-            tx( writeContracts.BatchCollection.mintBatch('0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32', 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
+            tx( writeContracts.BatchCollection.mintBatch(address, 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
           }}>Create project</Button>
         {/* </Box> */}
       {/* </Flex> */}

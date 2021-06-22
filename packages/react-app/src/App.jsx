@@ -163,8 +163,7 @@ function App(props) {
           <Container >
           <HStack spacing={10} alignItems={'center'} justifyContent={'center'}>
             <HStack
-            
-              as={'nav'}
+              as='nav'
               spacing={10}
               display={{ base: 'none', md: 'flex' }}>
               {/* {Links.map((link, href) => (
@@ -172,7 +171,7 @@ function App(props) {
               ))} */}
               <Link className="nav-link" key="/" onClick={()=>{setRoute("/")}} to="/">home</Link>
               <Link className="nav-link" key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">tokenize</Link>
-              {/* <Link key="/project" onClick={()=>{setRoute("/project")}} to="/project">project</Link> */}
+              {/* <Link className="nav-link" key="/project" onClick={()=>{setRoute("/project")}} to="/project">project</Link> */}
               <Link className="nav-link" key="/account" onClick={()=>{setRoute("/account")}} to="/account">account</Link>
             </HStack>
           </HStack>
@@ -222,12 +221,12 @@ function App(props) {
 
         {isOpen ? (
           <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={4}>
-              <Link key="/" onClick={()=>{setRoute("/")}} to="/">YourContract</Link>
-              <Link key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">Tokenize</Link>
-              <Link key="/project" onClick={()=>{setRoute("/project")}} to="/project">Project</Link>
-              <Link key="/account" onClick={()=>{setRoute("/account")}} to="/account">Account</Link>
-           </Stack>
+            <Stack as='nav' spacing={4}>
+              <Link className="nav-link" key="/" onClick={()=>{setRoute("/")}} to="/">home</Link>
+              <Link className="nav-link" key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">tokenize</Link>
+              {/* <Link className="nav-link" key="/project" onClick={()=>{setRoute("/project")}} to="/project">project</Link> */}
+              <Link className="nav-link" key="/account" onClick={()=>{setRoute("/account")}} to="/account">account</Link>
+            </Stack>
           </Box>
         ) : null}
       </Box>
@@ -312,19 +311,29 @@ function App(props) {
               />
           </Route>
           <Route path="/account">
-            <AccountPage />
+            <AccountPage 
+                address={address}
+                userProvider={userProvider}
+                mainnetProvider={mainnetProvider}
+                localProvider={localProvider}
+                yourLocalBalance={yourLocalBalance}
+                price={price}
+                tx={tx}
+                writeContracts={writeContracts}
+                readContracts={readContracts}
+            />
           </Route>
           <Route path="/tokenizer/:serialNo">
             <ProjectDetails 
-            address={address}
-            userProvider={userProvider}
-            mainnetProvider={mainnetProvider}
-            localProvider={localProvider}
-            yourLocalBalance={yourLocalBalance}
-            price={price}
-            tx={tx}
-            writeContracts={writeContracts}
-            readContracts={readContracts}
+                address={address}
+                userProvider={userProvider}
+                mainnetProvider={mainnetProvider}
+                localProvider={localProvider}
+                yourLocalBalance={yourLocalBalance}
+                price={price}
+                tx={tx}
+                writeContracts={writeContracts}
+                readContracts={readContracts}
             />
           </Route>
         </Switch>

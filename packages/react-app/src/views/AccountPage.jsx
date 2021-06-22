@@ -1,20 +1,24 @@
 import React from "react";
-import { Flex, Box, SimpleGrid } from "@chakra-ui/react";
+import { Heading, Flex, Box, SimpleGrid } from "@chakra-ui/react";
+import { useContractReader, useEventListener, useResolveName } from "../hooks";
+import {AppContainer, Container} from "./styles/Tokenize"
 
-export default function AccountPage() {
+export default function AccountPage({address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
   
+  const ownerBalanceOf = useContractReader(readContracts, "BatchCollection", "ownerBalanceOf", [address])
+  const getNFTs = useContractReader(readContracts, "BatchCollection", "getNftData", [2])
+  console.log("getNFTS are:", getNFTs)
+
 return (
     <div>
-      <Flex align="center" justify="center" height="70vh" direction="column">
-        <SimpleGrid columns={3}>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
-            <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">  </Box>
+      <Container>
+        <AppContainer>
+        <Heading>You have {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0} NFTs</Heading>
+        <SimpleGrid>
+          {/* {NFTarray.map((NFT) => (<Box>{NFT}</Box>))} */}
         </SimpleGrid>
-      </Flex>
+        </AppContainer>
+      </Container>
     </div>
   );
 }
