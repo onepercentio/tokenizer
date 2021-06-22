@@ -4,16 +4,23 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol"; // dev & testing
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
+import "./IContractRegistry.sol";
+
 
 contract Collection {
-    function getNftData(uint256 tokenId) public view returns (string memory) {}    
+    function getProjectIdent(uint256 tokenId) public view returns (string memory) {}   
+
+    function getQuantity(uint256 tokenId) public view returns (uint) {}    
+
+    
 }
 
-contract ProjectERC20 is Context, IERC20, IERC721Receiver {
+contract ProjectERC20 is Context, ERC20, IERC721Receiver {
 
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
@@ -22,28 +29,33 @@ contract ProjectERC20 is Context, IERC20, IERC721Receiver {
     // Initial supply = 0
     uint256 private _totalSupply = 0;
 
-    uint public decimals = 0;
+    uint8 private _decimals = 0;
 
     string private _name;
     string private _symbol;
     string public vintage;
-    string public standard;
-    string public country;
+    string public projectIdentifier;
+    address public contractRegistry;
 
 
     constructor (
         string memory name_, 
         string memory symbol_,
+        string memory _projectIdentifier,
         string memory _vintage,
-        string memory _standard,
-        string memory _country
-        ){
+        address _contractRegistry
+        ) ERC20(name_, symbol_) {
         _name = name_;
         _symbol = symbol_;
+        projectIdentifier = _projectIdentifier;
         vintage = _vintage;
-        standard = _standard;
-        country = _country;
+        contractRegistry = _contractRegistry;
     }
+
+    // // onlyOwner
+    // function setContractRegistry(address _address) public onlyOwner {
+    //     contractRegistry = _address;
+    // }
 
     /**
      * @dev function is called with `operator` as `_msgSender()` in a reference implementation by OZ
@@ -62,27 +74,23 @@ contract ProjectERC20 is Context, IERC20, IERC721Receiver {
         console.log("DEBUG sol: address msg.sender:", msg.sender);
         console.log("DEBUG sol: address _msgSender():", _msgSender());
 
-        require(_checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
+        // probably best to check via:
+        // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
+
+        require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
+        require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
 
         minterToId[from] = tokenId;
+
+        uint quantity = Collection(msg.sender).getQuantity(tokenId);
+        _mint(from, quantity);
         return this.onERC721Received.selector;
 
     }
 
-    /**
-     * @dev Checks if attributes of sent NFT are matching the attributes of this ERC20
-     *  @param collection is the address of the ERC721 collection the NFT was sent from
-     *  @param tokenId is the tokenId that shall be checked
-     **/
-    function _checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
-        console.log("DEBUG sol: _checkMatchingAttributes called");
-        console.log(Collection(collection).getNftData(tokenId));
-        console.log(vintage);
-
-        bytes32 nft = keccak256(abi.encodePacked(Collection(collection).getNftData(tokenId)));
-        bytes32 erc = keccak256(abi.encodePacked(vintage));
-
-        if (erc == nft) { 
+    // Check if BatchCollection is whitelisted (official)
+    function checkWhiteListed(address collection) internal view returns (bool) {
+        if (collection == IContractRegistry(contractRegistry).batchCollectionAddress()) {
             return true;
         }
         else {
@@ -90,108 +98,28 @@ contract ProjectERC20 is Context, IERC20, IERC721Receiver {
         }
     }
 
-    function totalSupply() public view virtual override returns (uint256) {
-        return _totalSupply;
-    }
+    /**
+     * @dev Checks if attributes of sent NFT are matching the attributes of this ERC20
+     *  @param collection is the address of the ERC721 collection the NFT was sent from
+     *  @param tokenId is the tokenId that shall be checked
+     **/
+    function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
+        console.log("DEBUG sol: _checkMatchingAttributes called");
+        // console.log(Collection(collection).getProjectIdent(tokenId));
+        // console.log(projectIdentifier);
 
+        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getProjectIdent(tokenId)));
+        bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
 
-    function balanceOf(address account) public view virtual override returns (uint256) {
-        return _balances[account];
-    }
-
-    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
-        _transfer(_msgSender(), recipient, amount);
-        return true;
-    }
-
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
-        return _allowances[owner][spender];
-    }
-
-
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
-        _approve(_msgSender(), spender, amount);
-        return true;
-    }
-
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
-        _transfer(sender, recipient, amount);
-
-        uint256 currentAllowance = _allowances[sender][_msgSender()];
-        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
-        unchecked {
-            _approve(sender, _msgSender(), currentAllowance - amount);
+        if (pid20 == pid721) { 
+            return true;
         }
-
-        return true;
-    }
-
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
-        _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
-        return true;
-    }
-
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
-        uint256 currentAllowance = _allowances[_msgSender()][spender];
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
-        unchecked {
-            _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+        else {
+            return false;
         }
-
-        return true;
     }
 
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
-        require(sender != address(0), "ERC20: transfer from the zero address");
-        require(recipient != address(0), "ERC20: transfer to the zero address");
-
-        _beforeTokenTransfer(sender, recipient, amount);
-
-        uint256 senderBalance = _balances[sender];
-        require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
-        unchecked {
-            _balances[sender] = senderBalance - amount;
-        }
-        _balances[recipient] += amount;
-
-        emit Transfer(sender, recipient, amount);
+    function decimals() public view virtual override returns (uint8) {
+        return _decimals;
     }
-
-
-    function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: mint to the zero address");
-
-        _beforeTokenTransfer(address(0), account, amount);
-
-        _totalSupply += amount;
-        _balances[account] += amount;
-        emit Transfer(address(0), account, amount);
-    }
-
-
-    function _burn(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: burn from the zero address");
-
-        _beforeTokenTransfer(account, address(0), amount);
-
-        uint256 accountBalance = _balances[account];
-        require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
-        unchecked {
-            _balances[account] = accountBalance - amount;
-        }
-        _totalSupply -= amount;
-
-        emit Transfer(account, address(0), amount);
-    }
-
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
-        require(owner != address(0), "ERC20: approve from the zero address");
-        require(spender != address(0), "ERC20: approve to the zero address");
-
-        _allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
-    }
-
-
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
 }
