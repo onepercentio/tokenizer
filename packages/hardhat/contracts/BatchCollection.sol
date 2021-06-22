@@ -88,10 +88,10 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return super.supportsInterface(interfaceId);
     }
 
-    /// @notice Returns a list of all Kitty IDs assigned to an address.
+    /// @notice Returns a list of all BatchIDs assigned to an address.
     /// @param _owner The owner whose Kitties we are interested in.
     /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
-    ///  expensive (it walks the entire Kitty array looking for cats belonging to owner),
+    ///  expensive (it walks the entire Batch array looking for cats belonging to owner),
     ///  but it also returns a dynamic array, which is only supported for web3 calls, and
     ///  not contract-to-contract calls.
     function tokensOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
