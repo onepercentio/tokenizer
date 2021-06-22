@@ -2,14 +2,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import { 
   ChakraProvider, 
   extendTheme,
-  theme,
   Menu, 
+  theme,
   MenuItem, 
   MenuList, 
   MenuButton,
   ColorModeProvider,
   CSSReset,
   Stack, 
+  Container,
   Box, 
   Flex,
   HStack,
@@ -76,15 +77,17 @@ if(DEBUG) console.log("🏠 Connecting to provider:", localProviderUrlFromEnv);
 const localProvider = new JsonRpcProvider(localProviderUrlFromEnv);
 
 // Chakra UI extendTheme colors
-const colors = {
-  brand: {
-    900: "#1a365d",
-    800: "#153e75",
-    700: "#2a69ac",
+const styles = {
+  colors: {
+    brand: {
+      100: "#00F6AA",
+    }
   },
+ 
 }
 
-// const theme = extendTheme({ colors })
+
+const globalTheme = extendTheme({ styles })
 
 function App(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -139,7 +142,7 @@ function App(props) {
   }, [ window.location.pathname ]);
 
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={globalTheme}>
     <ColorModeProvider options={{ useSystsemColorMode: true }}>
     <CSSReset />
     {/* <Toggle /> */}
@@ -155,22 +158,27 @@ function App(props) {
             display={{ md: 'none' }}
             onClick={isOpen ? onClose : onOpen}
           />
-          <HStack spacing={8} alignItems={'center'}>
             <Box><Header /></Box>
+
+          <Container >
+          <HStack spacing={10} alignItems={'center'} justifyContent={'center'}>
             <HStack
+            
               as={'nav'}
-              spacing={4}
+              spacing={10}
               display={{ base: 'none', md: 'flex' }}>
               {/* {Links.map((link, href) => (
                 <NavLink key={link, href}>{link}</NavLink>
               ))} */}
-              <Link key="/" onClick={()=>{setRoute("/")}} to="/">home</Link>
-              <Link key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">tokenize</Link>
+              <Link className="nav-link" key="/" onClick={()=>{setRoute("/")}} to="/">home</Link>
+              <Link className="nav-link" key="/tokenize" onClick={()=>{setRoute("/tokenize")}} to="/tokenize">tokenize</Link>
               {/* <Link key="/project" onClick={()=>{setRoute("/project")}} to="/project">project</Link> */}
-              <Link key="/account" onClick={()=>{setRoute("/account")}} to="/account">account</Link>
+              <Link className="nav-link" key="/account" onClick={()=>{setRoute("/account")}} to="/account">account</Link>
             </HStack>
           </HStack>
-          <Flex alignItems={'center'}>
+          </Container>
+
+          <Flex alignItems={'center'} > 
             <Menu>
               <MenuButton
                 as={Button}
