@@ -23,7 +23,7 @@ export default function AccountPage({
     <div>
       <Container>
         <AppContainer>
-          <Heading>You have {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0} NFTs</Heading>
+          <Heading fontFamily="Poppins">You have {ownerBalanceOf !== undefined ? parseInt(ownerBalanceOf._hex, 16) : 0} NFTs</Heading>
           
             {userBatches && userBatches.length ? userBatches.map(batch => 
             <>
