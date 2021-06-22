@@ -18,6 +18,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     address private _verifier;
     mapping (uint256 => bool) private _retirementConfirmedStatus;
 
+    /// @dev A mapping from batchs IDs to the address that owns them. All batches have
+    ///  some valid owner address from the point of minting, then transfer
+    mapping (uint256 => address) public batchIndexToOwner;
 
     address public contractRegistry;
     Counters.Counter private _tokenIds;
@@ -156,9 +159,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         uint256 newItemId = _tokenIds.current();
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
-        _safeMint(to, newItemId);
 
+        batchIndexToOwner[newItemId] = to;
         emit BatchMinted(to, tokenURI);
+        _safeMint(to, newItemId);
+        
         return newItemId;
     }
 }
