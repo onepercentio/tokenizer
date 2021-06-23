@@ -69,7 +69,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         console.log("\n--------------");
         console.log("DEBUG sol: called transferFrom(): msg.sender:", msg.sender);
         console.log("DEBUG sol:", from, to, tokenId);
-        console.log("DEBUG sol: address of CO2KenNFTCollection", address(this));
+        console.log("DEBUG sol: address of this contract", address(this));
         
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
 
@@ -94,11 +94,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     /// @notice Returns a list of all BatchIDs assigned to an address.
-    /// @param _owner The owner whose Kitties we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
-    ///  expensive (it walks the entire Batch array looking for cats belonging to owner),
-    ///  but it also returns a dynamic array, which is only supported for web3 calls, and
-    ///  not contract-to-contract calls.
     function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -107,7 +102,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
             // Return an empty array
             return new NFTData[](0);
         } 
-
         else 
         {
             NFTData[] memory result = new NFTData[](tokenCount);

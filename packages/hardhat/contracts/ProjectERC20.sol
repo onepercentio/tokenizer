@@ -72,7 +72,6 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: address operator:", operator);
         console.log("DEBUG sol: address from:", from);
         console.log("DEBUG sol: address msg.sender:", msg.sender);
-        console.log("DEBUG sol: address _msgSender():", _msgSender());
 
         // probably best to check via:
         // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
