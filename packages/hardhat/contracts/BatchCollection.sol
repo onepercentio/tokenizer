@@ -12,7 +12,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
-    event BatchMinted(address sender, string purpose);
+    event BatchMinted(address sender, string serialNumber, uint quantity);
+
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
@@ -47,7 +48,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     modifier onlyVerifier() {
         require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
         _;
-    }
+    }   
 
     function confirmRetirement (uint256 tokenId) public onlyVerifier {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
@@ -122,6 +123,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
             return result;
         }
     }
+
+
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
@@ -137,7 +140,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
+
         _safeMint(to, newItemId);
+        emit BatchMinted(to, _serialNumber, quantity);
 
         nftList[newItemId].projectIdentifier = _projectIdentifier;
         nftList[newItemId].vintage = _vintage;
@@ -148,21 +153,4 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return newItemId;
     }
 
-
-    function mintBatch(address to, string memory tokenURI)
-        public
-        returns (uint256)
-    {
-        _tokenIds.increment();
-
-        uint256 newItemId = _tokenIds.current();
-        console.log("minting to ", to);
-        console.log("newItemId is ", newItemId);
-
-        batchIndexToOwner[newItemId] = to;
-        emit BatchMinted(to, tokenURI);
-        _safeMint(to, newItemId);
-        
-        return newItemId;
-    }
 }
