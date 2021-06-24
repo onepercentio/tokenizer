@@ -17,7 +17,7 @@ contract Collection {
 
     function getQuantity(uint256 tokenId) public view returns (uint) {}    
 
-    
+    function getNftData(uint256 tokenId) public view returns (string memory, uint, bool) {}
 }
 
 contract ProjectERC20 is Context, ERC20, IERC721Receiver {
@@ -76,12 +76,15 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         // probably best to check via:
         // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
 
+        (string memory pid, uint quantity, bool approved) = Collection(msg.sender).getNftData(tokenId);
+        console.log("DEBUG sol:", pid, quantity, approved);
+
         require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
         require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
+        require(approved==true, "BatchNFT not yet confirmed");
 
         minterToId[from] = tokenId;
 
-        uint quantity = Collection(msg.sender).getQuantity(tokenId);
         _mint(from, quantity);
         return this.onERC721Received.selector;
 
@@ -104,8 +107,6 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
         console.log("DEBUG sol: _checkMatchingAttributes called");
-        // console.log(Collection(collection).getProjectIdent(tokenId));
-        // console.log(projectIdentifier);
 
         bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
