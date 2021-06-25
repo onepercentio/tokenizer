@@ -81,16 +81,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
-        
-        console.log("\n--------------");
-        console.log("DEBUG sol: called transferFrom(): msg.sender:", msg.sender);
-        console.log("DEBUG sol:", from, to, tokenId);
-        console.log("DEBUG sol: address of this contract", address(this));
-        
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {       
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
-
-        // _transfer(from, to, tokenId);
         safeTransferFrom(from, to, tokenId, "");
     }
 

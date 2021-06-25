@@ -55,19 +55,14 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      *
      **/
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
-        
         external 
         override 
         returns (bytes4) 
         {
-        console.log("----------------\n");
-        console.log("DEBUG sol: address operator:", operator);
-        console.log("DEBUG sol: address from:", from);
-        console.log("DEBUG sol: address msg.sender:", msg.sender);
-
         (string memory pid, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
         console.log("DEBUG sol:", pid, quantity, approved);
 
+        // msg.sender is the BatchCollection contract
         require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
         require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
         require(approved==true, "BatchNFT not yet confirmed");
