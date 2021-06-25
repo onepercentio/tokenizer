@@ -17,7 +17,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
-    mapping (uint256 => bool) private _retirementConfirmedStatus;
 
     /// @dev A mapping from batchs IDs to the address that owns them. All batches have
     ///  some valid owner address from the point of minting, then transfer
@@ -50,9 +49,14 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         _;
     }   
 
+    // Simple setter for verifier, there shall be multiple ones
+    function setVerifier (address verifier) public onlyOwner {
+        _verifier = verifier;
+    }
+
     function confirmRetirement (uint256 tokenId) public onlyVerifier {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
-        _retirementConfirmedStatus[tokenId] = true;
+        nftList[tokenId].confirmed = true;
         emit BatchRetirementConfirmed(tokenId);
     }
 
