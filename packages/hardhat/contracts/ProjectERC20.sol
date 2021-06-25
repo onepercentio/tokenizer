@@ -10,15 +10,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
 import "./IContractRegistry.sol";
-
-
-contract Collection {
-    function getProjectIdent(uint256 tokenId) public view returns (string memory) {}   
-
-    function getQuantity(uint256 tokenId) public view returns (uint) {}    
-
-    function getNftData(uint256 tokenId) public view returns (string memory, uint, bool) {}
-}
+import "./IBatchCollection.sol";
 
 contract ProjectERC20 is Context, ERC20, IERC721Receiver {
 
@@ -73,10 +65,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: address from:", from);
         console.log("DEBUG sol: address msg.sender:", msg.sender);
 
-        // probably best to check via:
-        // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
-
-        (string memory pid, uint quantity, bool approved) = Collection(msg.sender).getNftData(tokenId);
+        (string memory pid, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
         console.log("DEBUG sol:", pid, quantity, approved);
 
         require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
@@ -108,7 +97,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
         console.log("DEBUG sol: _checkMatchingAttributes called");
 
-        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getProjectIdent(tokenId)));
+        bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
 
         if (pid20 == pid721) { 
