@@ -60,8 +60,8 @@ describe("", () => {
         await FactoryContract.deployNewToken(name, symbol, projectIdentifier, vintage, registryC.address);
         // await FactoryContract.deployNewToken(name, symbol, projectIdentifier2, vintage, registryC.address);
 
-        response = await FactoryContract.getContracts();
-        console.log("logging getContracts()", response);
+        pERC20Array = await FactoryContract.getContracts();
+        console.log("logging getContracts()", pERC20Array);
         // await FactoryContract.test();
 
         const tokenId = 1;
@@ -72,14 +72,14 @@ describe("", () => {
         await NFTcontract.setVerifier(owner.address);
         await NFTcontract.confirmRetirement(tokenId);
         console.log("NFT Confirmation status:", await NFTcontract.getConfirmationStatus(tokenId));
-        // console.log(owner.address, response[0]);
+        // console.log(owner.address, pERC20Array[0]);
 
 // ---------------------
         // Sending BatchNFTs to pERC20 contract
 
         console.log("balance project:", await NFTcontract.balanceOf(project.address));
         console.log("balance owner:", await NFTcontract.balanceOf(owner.address));
-        console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
+        console.log("balance pERC20:", await NFTcontract.balanceOf(pERC20Array[0]));
 
         console.log("\n----Sending BatchNFT from Project to Account 1:");
         await NFTcontract.connect(project).transferFrom(project.address, owner.address, 1);
@@ -87,16 +87,19 @@ describe("", () => {
 
         console.log("balance project:", await NFTcontract.balanceOf(project.address));
         console.log("balance owner:", await NFTcontract.balanceOf(owner.address));
-        console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
+        console.log("balance pERC20:", await NFTcontract.balanceOf(pERC20Array[0]));
 
         console.log("\n----Sending BatchNFT from Account 1 to pERC20 contract:");
-        await NFTcontract.connect(owner).transferFrom(owner.address, response[0], 1);
+        await NFTcontract.connect(owner).transferFrom(owner.address, pERC20Array[0], 1);
 
         console.log("balance project:", await NFTcontract.balanceOf(project.address));
         console.log("balance owner:", await NFTcontract.balanceOf(owner.address));
-        console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
+        console.log("balance pERC20:", await NFTcontract.balanceOf(pERC20Array[0]));
 
-        // console.log("balance pERC20:", await NFTcontract.balanceOf(response[0]));
+        let existingContract = await ethers.getContractAt("ProjectERC20", pERC20Array[0]);
+        // console.log(existingContract);
+
+        console.log("balance pERC20:", await existingContract.balanceOf(owner.address));
 
     });
 
