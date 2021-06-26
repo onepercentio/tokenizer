@@ -39,10 +39,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
 
-    //onlyOwner
-    function setContractRegistry(address _address) public onlyOwner {
-        contractRegistry = _address;
-    }
 
     modifier onlyVerifier() {
         require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
