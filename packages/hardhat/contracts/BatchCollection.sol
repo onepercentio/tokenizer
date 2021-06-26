@@ -39,7 +39,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
 
-
+    // The verifier has the authority to confirm NFTs so ERC20's can be minted
     modifier onlyVerifier() {
         require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
         _;
@@ -50,6 +50,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         _verifier = verifier;
     }
 
+    // Appointed verifier confirms that claim about retirement is valid 
     function confirmRetirement (uint256 tokenId) public onlyVerifier {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
         nftList[tokenId].confirmed = true;

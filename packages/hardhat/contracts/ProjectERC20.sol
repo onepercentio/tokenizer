@@ -44,15 +44,10 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         contractRegistry = _contractRegistry;
     }
 
-    // // onlyOwner
-    // function setContractRegistry(address _address) public onlyOwner {
-    //     contractRegistry = _address;
-    // }
-
     /**
      * @dev function is called with `operator` as `_msgSender()` in a reference implementation by OZ
      * `from` is the previous owner, not necessarily the same as operator
-     *
+     *  Function checks if NFT collection is whitelisted and next if attributes are matching this erc20 contract
      **/
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
         external 
