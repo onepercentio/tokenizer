@@ -5,12 +5,20 @@ import "hardhat/console.sol"; // dev & testing
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./ProjectERC20.sol";
 
+import "./IContractRegistry.sol";
+import "./IBatchCollection.sol";
+
 contract ProjectERC20Factory {
 
     event TokenCreated(address tokenAddress);
 
     address[] private deployedContracts; 
+    address public contractRegistry;
     mapping (string => address) public pContractRegistry;
+
+    constructor (address _contractRegistry) {
+        contractRegistry = _contractRegistry;
+    }
 
     function deployNewToken(
         string memory _name, 
@@ -34,8 +42,13 @@ contract ProjectERC20Factory {
         emit TokenCreated(address(t));
     }
 
-     function deployWithTemplate(address collection, uint256 tokenId) public {
-        //  string memory _vintage = IERC721(collection).nftData[tokenId].vintage;
+     // Deploy providing an NFT as template, currently would work only with one single collection
+     function deployFromTemplate(uint256 tokenId) public {
+        address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
+        (string memory pid, uint quantity, bool approved) = IBatchCollection(collection).getNftData(tokenId);
+        // Needs some consideration about automatic naming
+        deployNewToken("name", "symbol", pid, "vintage", contractRegistry);
+
      }
 
 

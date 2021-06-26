@@ -49,7 +49,7 @@ describe("", () => {
         // Deploying ProjectERC20Factory
         console.log("\n----\nDeploying ProjectERC20Factory:");
         factory = await ethers.getContractFactory("ProjectERC20Factory");  
-        FactoryContract = await factory.deploy();
+        FactoryContract = await factory.deploy(registryC.address);
 
         name = "ProjectTreez"; 
         symbol = "CO-GS-16";
