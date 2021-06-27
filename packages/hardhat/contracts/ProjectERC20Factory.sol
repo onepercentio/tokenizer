@@ -51,7 +51,6 @@ contract ProjectERC20Factory {
         /// @TODO: Needs some consideration about automatic naming
         console.log("DEBUG: deploying from template");
         deployNewToken("pERC20-P-XYZ-Vin2015", "PV20-ID123-y15", pid, vintage, contractRegistry);
-
      }
 
 

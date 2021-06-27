@@ -100,6 +100,28 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         }
     }
 
+
+    // Retirement of TCUs
+    function retire(uint256 amount) public {
+        _retire(_msgSender(), amount);
+    }
+
+    function retireFrom(address account, uint256 amount) public {
+        uint256 currentAllowance = allowance(account, _msgSender());
+        require(currentAllowance >= amount, "ERC20: retire amount exceeds allowance");
+        _approve(account, _msgSender(), currentAllowance - amount);
+        _burn(account, amount);
+        _retire(_msgSender(), amount);
+    }
+
+    // non-functional
+    function _retire(address account, uint256 amount) internal {
+        require(account != address(0), "ERC20: burn from the zero address");
+        address retirementAddress = IContractRegistry(contractRegistry).retirementAddress();
+        transfer(retirementAddress, uint256 amount)
+    }
+
+
     function decimals() public view virtual override returns (uint8) {
         return _decimals;
     }
