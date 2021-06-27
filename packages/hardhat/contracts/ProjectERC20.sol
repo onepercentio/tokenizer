@@ -10,15 +10,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 
 import "./IContractRegistry.sol";
-
-
-contract Collection {
-    function getProjectIdent(uint256 tokenId) public view returns (string memory) {}   
-
-    function getQuantity(uint256 tokenId) public view returns (uint) {}    
-
-    
-}
+import "./IBatchCollection.sol";
 
 contract ProjectERC20 is Context, ERC20, IERC721Receiver {
 
@@ -52,37 +44,26 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         contractRegistry = _contractRegistry;
     }
 
-    // // onlyOwner
-    // function setContractRegistry(address _address) public onlyOwner {
-    //     contractRegistry = _address;
-    // }
-
     /**
      * @dev function is called with `operator` as `_msgSender()` in a reference implementation by OZ
      * `from` is the previous owner, not necessarily the same as operator
-     *
+     *  Function checks if NFT collection is whitelisted and next if attributes are matching this erc20 contract
      **/
     function onERC721Received(address operator, address from, uint256 tokenId, bytes calldata data)
-        
         external 
         override 
         returns (bytes4) 
         {
-        console.log("----------------\n");
-        console.log("DEBUG sol: address operator:", operator);
-        console.log("DEBUG sol: address from:", from);
-        console.log("DEBUG sol: address msg.sender:", msg.sender);
-        console.log("DEBUG sol: address _msgSender():", _msgSender());
+        (string memory pid, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        console.log("DEBUG sol:", pid, quantity, approved);
 
-        // probably best to check via:
-        // require(msg.sender==IContractRegistry(contractRegistry).batchCollectionAddress())
-
+        // msg.sender is the BatchCollection contract
         require(checkWhiteListed(msg.sender), "Error: Batch-NFT not from whitelisted contract");
         require(checkMatchingAttributes(msg.sender, tokenId), "Error: non-matching NFT");
+        require(approved==true, "BatchNFT not yet confirmed");
 
         minterToId[from] = tokenId;
 
-        uint quantity = Collection(msg.sender).getQuantity(tokenId);
         _mint(from, quantity);
         return this.onERC721Received.selector;
 
@@ -105,10 +86,8 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
         console.log("DEBUG sol: _checkMatchingAttributes called");
-        // console.log(Collection(collection).getProjectIdent(tokenId));
-        // console.log(projectIdentifier);
 
-        bytes32 pid721 = keccak256(abi.encodePacked(Collection(collection).getProjectIdent(tokenId)));
+        bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
 
         if (pid20 == pid721) { 

@@ -12,11 +12,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
 
-    event BatchMinted(address sender, string purpose);
+    event BatchMinted(address sender, string serialNumber, uint quantity);
+
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
-    mapping (uint256 => bool) private _retirementConfirmedStatus;
 
     /// @dev A mapping from batchs IDs to the address that owns them. All batches have
     ///  some valid owner address from the point of minting, then transfer
@@ -39,19 +39,21 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
 
-    //onlyOwner
-    function setContractRegistry(address _address) public onlyOwner {
-        contractRegistry = _address;
-    }
-
+    // The verifier has the authority to confirm NFTs so ERC20's can be minted
     modifier onlyVerifier() {
         require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
         _;
+    }   
+
+    // Simple setter for verifier, there shall be multiple ones
+    function setVerifier (address verifier) public onlyOwner {
+        _verifier = verifier;
     }
 
+    // Appointed verifier confirms that claim about retirement is valid 
     function confirmRetirement (uint256 tokenId) public onlyVerifier {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
-        _retirementConfirmedStatus[tokenId] = true;
+        nftList[tokenId].confirmed = true;
         emit BatchRetirementConfirmed(tokenId);
     }
 
@@ -63,17 +65,21 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return nftList[tokenId].quantity;
     }
 
-    // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {
-        
-        console.log("\n--------------");
-        console.log("DEBUG sol: called transferFrom(): msg.sender:", msg.sender);
-        console.log("DEBUG sol:", from, to, tokenId);
-        console.log("DEBUG sol: address of CO2KenNFTCollection", address(this));
-        
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+    function getConfirmationStatus(uint256 tokenId) public view returns (bool) {
+        return nftList[tokenId].confirmed;
+    }
 
-        // _transfer(from, to, tokenId);
+   function getNftData(uint256 tokenId) public view returns (string memory, uint, bool) {
+        return (
+            nftList[tokenId].projectIdentifier,
+            nftList[tokenId].quantity,
+            nftList[tokenId].confirmed
+            );
+    }
+
+    // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {       
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -94,11 +100,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     /// @notice Returns a list of all BatchIDs assigned to an address.
-    /// @param _owner The owner whose Kitties we are interested in.
-    /// @dev This method MUST NEVER be called by smart contract code. First, it's fairly
-    ///  expensive (it walks the entire Batch array looking for cats belonging to owner),
-    ///  but it also returns a dynamic array, which is only supported for web3 calls, and
-    ///  not contract-to-contract calls.
     function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -107,7 +108,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
             // Return an empty array
             return new NFTData[](0);
         } 
-
         else 
         {
             NFTData[] memory result = new NFTData[](tokenCount);
@@ -128,6 +128,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
             return result;
         }
     }
+
+
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
@@ -143,7 +145,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         console.log("minting to ", to);
         console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
+
         _safeMint(to, newItemId);
+        emit BatchMinted(to, _serialNumber, quantity);
 
         nftList[newItemId].projectIdentifier = _projectIdentifier;
         nftList[newItemId].vintage = _vintage;
@@ -154,21 +158,4 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return newItemId;
     }
 
-
-    function mintBatch(address to, string memory tokenURI)
-        public
-        returns (uint256)
-    {
-        _tokenIds.increment();
-
-        uint256 newItemId = _tokenIds.current();
-        console.log("minting to ", to);
-        console.log("newItemId is ", newItemId);
-
-        batchIndexToOwner[newItemId] = to;
-        emit BatchMinted(to, tokenURI);
-        _safeMint(to, newItemId);
-        
-        return newItemId;
-    }
 }
