@@ -58,11 +58,12 @@ function Project({
               colorScheme="teal"
               onClick={() => {
                 console.log("createProject", newProject);
+                alert('You will see a notification when your transcation has been processed. This may take a moment.')
                 /* look how you call setPurpose on your contract: */
                 tx(writeContracts.ProjectFactory.createProject(newProject));
               }}
             >
-              Create project
+              Tokenize
             </Button>
           </div>
 

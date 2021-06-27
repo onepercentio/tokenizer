@@ -10,6 +10,9 @@ const main = async () => {
 
   const BatchCollection = await deploy("BatchCollection");
   console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
+  
+  const ProjectCollection = await deploy("ProjectCollection");
+  console.log(`ProjectCollection.address ---> : ${ProjectCollection.address}`);
 
   // const ProjectContract = await deploy("ProjectContract");
   // console.log(`ProjectContract.address ---> : ${ProjectContract.address}`);
