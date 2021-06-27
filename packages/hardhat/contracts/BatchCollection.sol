@@ -131,7 +131,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
-
+    // Entry function to bring offsets on-chain
+    // Mints an NFT claiming that 1 to n tons have been retired
+    // On mint confirmation status is set to fale
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
