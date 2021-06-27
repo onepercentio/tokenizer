@@ -17,12 +17,14 @@ const main = async () => {
   // const ProjectFactory = await deploy("ProjectFactory");
   // console.log(`ProjectFactory.address ---> : ${ProjectFactory.address}`);
 
-  const ProjectERC20Factory = await deploy("ProjectERC20Factory");
-  console.log(`ProjectFactory.address ---> : ${ProjectERC20Factory.address}`);
-
   const ContractRegistry = await deploy("ContractRegistry");
   // await ProjectFactory.setContractRegistry(ContractRegistry.address);
   console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
+
+
+  const ProjectERC20Factory = await deploy("ProjectERC20Factory", [ContractRegistry.address]);
+  console.log(`ProjectFactory.address ---> : ${ProjectERC20Factory.address}`);
+
 
   await ContractRegistry.setBatchCollectionAddress(BatchCollection.address);
   // await ContractRegistry.setProjectCollectionAddress(ProjectContract.address);
