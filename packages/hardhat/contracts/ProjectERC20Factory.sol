@@ -45,9 +45,12 @@ contract ProjectERC20Factory {
      // Deploy providing an NFT as template, currently would work only with one single collection
      function deployFromTemplate(uint256 tokenId) public {
         address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
-        (string memory pid, uint quantity, bool approved) = IBatchCollection(collection).getNftData(tokenId);
-        // Needs some consideration about automatic naming
-        deployNewToken("name", "symbol", pid, "vintage", contractRegistry);
+        // (string memory pid, , ) = IBatchCollection(collection).getNftData(tokenId);
+        (string memory pid, string memory vintage, , , ) = IBatchCollection(collection).getNftData(tokenId);
+
+        /// @TODO: Needs some consideration about automatic naming
+        console.log("DEBUG: deploying from template");
+        deployNewToken("pERC20-P-XYZ-Vin2015", "PV20-ID123-y15", pid, vintage, contractRegistry);
 
      }
 

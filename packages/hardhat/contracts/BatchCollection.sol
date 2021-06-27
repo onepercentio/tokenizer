@@ -69,9 +69,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view returns (string memory, uint, bool) {
+   function getNftData(uint256 tokenId) public view returns (string memory, string memory, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
+            nftList[tokenId].vintage,
+            nftList[tokenId].serialNumber,
             nftList[tokenId].quantity,
             nftList[tokenId].confirmed
             );

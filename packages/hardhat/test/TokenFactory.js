@@ -58,13 +58,17 @@ describe("", () => {
         console.log("Deploy new ProjectERC20 token via ProjectERC20Factory...");
 
         await FactoryContract.deployNewToken(name, symbol, projectIdentifier, vintage, registryC.address);
-        // await FactoryContract.deployNewToken(name, symbol, projectIdentifier2, vintage, registryC.address);
+        await FactoryContract.deployNewToken(name, symbol, projectIdentifier2, vintage, registryC.address);
+
+        console.log("Deploying new ProjectERC20 from template...");
+        let tokenId = 1;
+        await FactoryContract.deployFromTemplate(tokenId);
+
 
         pERC20Array = await FactoryContract.getContracts();
         console.log("logging getContracts()", pERC20Array);
         // await FactoryContract.test();
 
-        const tokenId = 1;
         expect(await NFTcontract.ownerOf(tokenId)).to.equal(project.address);
         console.log("Owner of NFT:", await NFTcontract.ownerOf(tokenId));
         console.log("NFT Confirmation status:", await NFTcontract.getConfirmationStatus(tokenId));
