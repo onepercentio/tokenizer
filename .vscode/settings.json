@@ -1,3 +1,4 @@
 {
-    "solidity.packageDefaultDependenciesDirectory": "packages/hardhat/node_modules"
+    "solidity.packageDefaultDependenciesDirectory": "packages/hardhat/node_modules",
+    "eslint.alwaysShowStatus": true
 }
