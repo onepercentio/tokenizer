@@ -38,7 +38,7 @@ import {
 } from "./hooks";
 import { Header, Account, Faucet, Ramp, Contract, GasGauge, Address, Balance, Wallet } from "./components";
 import { Transactor } from "./helpers";
-import { Tokenize, Admin, Landing, AccountPage, Project, HowWorks, ProjectDetails } from "./views";
+import { Tokenize, Admin, Landing, AccountPage, Project, HowWorks, ProjectDetails, DeployBRC } from "./views";
 import { DAI_ABI, DAI_ADDRESS, INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import ExampleUI from "./views/ExampleUI";
 /*
@@ -175,13 +175,13 @@ function App(props) {
               ))} */}
                       <Link
                         className="nav-link"
-                        key="/"
+                        key="/deploy"
                         onClick={() => {
-                          setRoute("/");
+                          setRoute("/deploy");
                         }}
-                        to="/"
+                        to="/deploy"
                       >
-                        home
+                        deploy
                       </Link>
                       <Link
                         className="nav-link"
@@ -330,6 +330,19 @@ function App(props) {
               </Route>
               <Route path="/admin">
                 <Admin
+                  address={address}
+                  userProvider={userProvider}
+                  mainnetProvider={mainnetProvider}
+                  localProvider={localProvider}
+                  yourLocalBalance={yourLocalBalance}
+                  price={price}
+                  tx={tx}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                />
+              </Route>
+              <Route path="/deploy">
+                <DeployBRC
                   address={address}
                   userProvider={userProvider}
                   mainnetProvider={mainnetProvider}

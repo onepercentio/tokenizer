@@ -21,12 +21,12 @@ export default function ProjectDetails({
   let project = "";
 
   for (let i = 0; i < projects.length; i++) {
-    if (projects[i].resourceIdentifier == serialNo[9]) {
+    if (projects[i].resourceIdentifier === serialNo[9]) {
       project = projects[i];
     }
   }
 
-  function notifyDiscord(projectId) {
+  function notifyDiscord(serialNum) {
     const request = new XMLHttpRequest();
     request.open("POST", process.env.REACT_APP_NOTIFY_TOKENIZATION);
     // replace the url in the "open" method with yours
@@ -35,7 +35,7 @@ export default function ProjectDetails({
       username: "Tokenization request",
       avatar_url:
         "https://uploads-ssl.webflow.com/5e59b1719e288f9894e1576f/5e5b0d8f2089e571d48b4cfa_logo_toucan_256.png",
-      content: `Tokenization request for ${process.env.REACT_APP_SITE_URL}tokenizer/${serialNo}`,
+      content: `Tokenization request for ${process.env.REACT_APP_SITE_URL}tokenizer/${serialNum}`,
     };
     request.send(JSON.stringify(params));
   }
@@ -89,31 +89,15 @@ export default function ProjectDetails({
             <Box align="left"> {project.estAnnualEmissionReductions}</Box>
           </SimpleGrid>
           <br />
-          {/* <VStack align="left">
-            <Text fontWeight="700">Block Id Start: {project["program"]}</Text>
-            <Text fontWeight="700">Block Id End: {serialNo[2]}</Text>
-            <Text fontWeight="700">Project Id: {serialNo[9]}</Text>
-          </VStack> */}
-          {/* <Button variant="outline" colorScheme="teal" size="lg" mt={4}>Request Tokenization</Button> */}
-          {/* <Button variant="outline" colorScheme="teal" size="lg" mt={4} onClick={()=>{
-            console.log("mint batch!!!")
-            console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
-            tx( writeContracts.BatchCollection.mintBatch('0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32', 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
-          }}>Create project</Button> */}
-          {/* <Button onClick={()=>{
-            console.log("mint batch!!!")
-            console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`)
-            tx( writeContracts.BatchCollection.mintBatch(address, 'https://en.wikipedia.org/wiki/Pepe_the_Frog#/media/File:Feels_good_man.jpg') )
-          }}>Create project</Button> */}
 
           <Button
             onClick={() => {
               console.log("mint batch!!!");
               console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`);
               alert("You will see a notification when your transcation has been processed. This may take a moment.");
-              notifyDiscord(serialNo);
+              notifyDiscord(serialNo.join("-"));
               tx(
-                writeContracts.BatchCollection.mintBatchWithData(
+                writeContracts.BatchCollection.updateBatchWithData(
                   address,
                   project.resourceIdentifier,
                   "Sample Vintage",

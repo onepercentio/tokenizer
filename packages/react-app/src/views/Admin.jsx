@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { List } from "antd";
-import { Heading, Text, Flex, Box, Button, Input, Divider, Stack, Switch, Center } from "@chakra-ui/react";
+import { Heading, Text, Flex, Box, Button, Input, Divider, SimpleGrid, Center } from "@chakra-ui/react";
 import { parseEther, formatEther } from "@ethersproject/units";
-import { useHistory } from "react-router-dom";
 import { useContractReader, useEventListener, useResolveName } from "../hooks";
 
 export default function Admin({
@@ -17,46 +16,74 @@ export default function Admin({
   readContracts,
   writeContracts,
 }) {
-  // keep track of a variable from the contract in the local React state:
-  const purpose = useContractReader(readContracts, "BatchCollection", "purpose");
-  console.log("🤗 !! purpose:", purpose);
 
-  // const ownerBalanceOf = useContractReader(readContracts,"ProjectContract", "ownerBalanceOf", ["0xD2CAc44B9d072A0D6bD39482147d894f13C5CF32"])
-  // console.log("🤗 ownerBalanceOf:", ownerBalanceOf)
+  const unapprovedTokens = useContractReader(readContracts, "BatchCollection", "tokenizationRequests", [address]);;
+  console.log("unapproved tokens: ", unapprovedTokens);
 
-  // 📟 Listen for broadcast events
-  const projectCreatedEvents = useEventListener(readContracts, "ProjectFactory", "ProjectCreated", localProvider, 1);
-  console.log("📟 SetPurpose events:", projectCreatedEvents);
-
-  const projectMintedEvents = useEventListener(readContracts, "ProjectContract", "ProjectMinted", localProvider, 1);
-  console.log("📟 SetPurpose events:", projectMintedEvents);
-
-  // const unapprovedTokens = readContracts.
-  const unapprovedTokens = [];
   return (
     <div>
       <Center>
-        {/* <Flex align="center" justify="center" height="50vh" direction="column"> */}
-        {/* <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg">
-          <Stack direction={["column", "row"]} mb={2} align="left">
-            <Text>Tokenization requests</Text>
-            <Text color="teal" fontWeight="700">Carbon Credits</Text>
-          </Stack>
-          <Divider />
-          readContracts.YourContract
-        </Box> */}
         <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={["auto", "45%"]}>
           <Heading as="h3" size="lg" mb="2">
             Tokenization requests
           </Heading>
           <div>
-            <List
+            {/* <List
               bordered
               dataSource={projectCreatedEvents}
               renderItem={item => {
                 return <List.Item>{item}</List.Item>;
               }}
-            />
+            /> */}
+          <Text>
+            There are{" "}
+            <span style={{ color: "#00F6AA" }}>
+              {unapprovedTokens && unapprovedTokens.length}
+            </span>{" "}
+            unapproved tokens waiting for approval.
+          </Text>
+          {unapprovedTokens && unapprovedTokens.length
+            ? unapprovedTokens.map(token => (
+                <>
+                  <br/>
+                  <br/>
+                  <SimpleGrid columns={2} spacing={10} mb={2} fontFamily="Cousine">
+                    <Box align="right" fontWeight="bold">
+                      Resource Identifier:
+                    </Box>
+                    <Box align="left">{token[0]}</Box>
+                    
+                    <Box align="right" fontWeight="bold">
+                      Status:
+                    </Box>
+                    {token[4] === false ?
+                    <Box align="left" color="red">unconfirmed</Box>
+                    :
+                    <Box align="left" color="green">confirmed</Box>
+                    }
+                    
+                    <Box align="right" fontWeight="bold">
+                      Vintage:
+                    </Box>
+                    <Box align="left">{token[1]}</Box>
+                    
+                    <Box align="right" fontWeight="bold">
+                      Serial Number:
+                    </Box>
+                    <Box align="left">{token[2]}</Box>
+                    
+                    <Box align="right" fontWeight="bold">
+                      Quantity:
+                    </Box>
+                    <Box align="left">
+                      {token[3] && typeof token[3] !== "undefined" ? parseInt(token[3]._hex, 16) : ""}
+                    </Box>
+                  </SimpleGrid>
+                  <Button mb={2}> Approve </Button>
+                  <Divider />
+                </>
+              ))
+            : ""}
           </div>
         </Box>
         {/* </Flex> */}
