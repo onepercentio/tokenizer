@@ -8,7 +8,7 @@ We are building an MVP for the tokenization of legacy (real-world) carbon credit
 The image below depicts a simplified version of the tokenization system.
 The entry point is a user that wants to tokenize their carbon offset credits.
 The project NFTs that contain meta data about offsetting projects are not depicted in this diagram for simplification purposes.
-![Architecture](documentation/arch-overview-v0.5png)
+![Architecture](documentation/MVP-Arch-overview-v0.5.png)
 
 # Stack
 ## Built with Scaffold-ETH

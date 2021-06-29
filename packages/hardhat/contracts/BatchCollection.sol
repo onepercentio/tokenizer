@@ -69,9 +69,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view returns (string memory, uint, bool) {
+   function getNftData(uint256 tokenId) public view returns (string memory, string memory, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
+            nftList[tokenId].vintage,
+            nftList[tokenId].serialNumber,
             nftList[tokenId].quantity,
             nftList[tokenId].confirmed
             );
@@ -129,7 +131,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
-
+    // Entry function to bring offsets on-chain
+    // Mints an NFT claiming that 1 to n tons have been retired
+    // On mint confirmation status is set to fale
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
