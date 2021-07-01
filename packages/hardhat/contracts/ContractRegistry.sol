@@ -12,7 +12,8 @@ contract ContractRegistry is Ownable, IContractRegistry {
     address private _projectFactoryAddress;
     address private _ProjectERC20FactoryAddress;
 
-    // Setters
+    // --- Setters ---
+
     function setProjectCollectionAddress(address _address) public onlyOwner {
         _projectCollectionAddress = _address;
     }
@@ -29,7 +30,8 @@ contract ContractRegistry is Ownable, IContractRegistry {
         _ProjectERC20FactoryAddress = _address;
     }
 
-    // Getters
+    // --- Getters ---
+
     function batchCollectionAddress() external view override returns (address) {
         return _batchCollectionAddress;
     }
