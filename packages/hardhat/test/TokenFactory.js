@@ -74,7 +74,8 @@ describe("", () => {
     console.log("Deploying new ProjectERC20 from template...");
     const tokenId = 1;
     await FactoryContract.deployFromTemplate(tokenId);
-
+    
+    // retrieve array with all erc20 contract addresses
     pERC20Array = await FactoryContract.getContracts();
     console.log("logging getContracts()", pERC20Array);
     // await FactoryContract.test();
