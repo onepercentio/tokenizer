@@ -33,6 +33,10 @@ contract ProjectERC20Factory {
         require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
 
         ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage, _contractRegistry);
+
+        // Register deployed ERC20 in ContractRegistry
+        IContractRegistry(contractRegistry).addERC20(address(t));
+        
         deployedContracts.push(address(t));
         pContractRegistry[_pTokenIdentifier] = address(t);
 

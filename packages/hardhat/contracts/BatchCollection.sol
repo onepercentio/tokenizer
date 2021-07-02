@@ -6,11 +6,15 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "hardhat/console.sol";
+
+import "./IContractRegistry.sol";
 
 contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
+    using Address for address;
 
     event BatchMinted(address sender, string serialNumber, uint quantity);
 
@@ -37,7 +41,10 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     mapping (uint256 => NFTData) public nftList;
 
-    constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
+    constructor(address _contractRegistry) ERC721("ClaimCollection", "v0.1-Claim") {
+        contractRegistry = _contractRegistry;
+    }
+
 
     // The verifier has the authority to confirm NFTs so ERC20's can be minted
     modifier onlyVerifier() {
@@ -94,7 +101,15 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, amount);
+        console.log("DEBUG sol: called _beforeTokenTransfer");
+        console.log(contractRegistry);
+        if (to.isContract()) {
+        require(IContractRegistry(contractRegistry).checkERC20(to), "pERC20 contract is not official");
+        }
+        else {
+            super._beforeTokenTransfer(from, to, amount);
+        }
+
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
@@ -146,7 +161,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
-        console.log("minting to ", to);
+        console.log("minting Batch NFT to ", to);
         console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
 
