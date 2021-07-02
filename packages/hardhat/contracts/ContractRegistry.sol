@@ -16,12 +16,10 @@ contract ContractRegistry is Ownable, IContractRegistry {
 
     mapping (address => bool) public pERC20Registry;
 
+    // should be moved here from ProjectERC20Factory.sol
     mapping (string => address) public pidToERC20;
 
- 
-     /**
-     * @dev Throws if called by any account other than the owner.
-     */
+    // Currently not used, replaced by OnlyBy modifier
     modifier onlyFactory() {
         require(_ProjectERC20FactoryAddress != address(0), "ProjectERC20FactoryAddress not set");
         require(_ProjectERC20FactoryAddress == _msgSender(), "Caller is not the factory");
@@ -33,6 +31,7 @@ contract ContractRegistry is Ownable, IContractRegistry {
 
      _;
     }
+
 
     // --- Setters ---
 

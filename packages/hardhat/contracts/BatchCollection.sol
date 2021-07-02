@@ -96,13 +96,10 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     function ownerBalanceOf(address owner) public view returns (uint256) {
         uint256 balance = balanceOf(owner);
         console.log("Owner balance is ", balance);
-
         return (balance);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC721, ERC721Enumerable) {
-        console.log("DEBUG sol: called _beforeTokenTransfer");
-        console.log(contractRegistry);
         if (to.isContract()) {
         require(IContractRegistry(contractRegistry).checkERC20(to), "pERC20 contract is not official");
         }
