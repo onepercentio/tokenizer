@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol"; // dev & testing
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -21,14 +20,9 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     // Initial supply = 0
     uint256 private _totalSupply = 0;
 
-    uint8 private _decimals = 0;
-
-    string private _name;
-    string private _symbol;
     string public vintage;
     string public projectIdentifier;
     address public contractRegistry;
-
 
     constructor (
         string memory name_, 
@@ -37,8 +31,6 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         string memory _vintage,
         address _contractRegistry
         ) ERC20(name_, symbol_) {
-        _name = name_;
-        _symbol = symbol_;
         projectIdentifier = _projectIdentifier;
         vintage = _vintage;
         contractRegistry = _contractRegistry;
@@ -98,9 +90,5 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         else {
             return false;
         }
-    }
-
-    function decimals() public view virtual override returns (uint8) {
-        return _decimals;
     }
 }
