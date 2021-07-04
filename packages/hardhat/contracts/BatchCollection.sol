@@ -101,6 +101,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC721, ERC721Enumerable) {
         if (to.isContract()) {
+        // Reverts if NFT is send a non official pERC20 contract
         require(IContractRegistry(contractRegistry).checkERC20(to), "pERC20 contract is not official");
         }
         else {

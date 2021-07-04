@@ -8,15 +8,16 @@ const R = require("ramda");
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
-  const ContractRegistry = await deploy("ContractRegistry");
-  console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
-
-  const BatchCollection = await deploy("BatchCollection");
-  console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
-  
+  // Not yet used in the tokenization flow
   const ProjectCollection = await deploy("ProjectCollection");
   console.log(`ProjectCollection.address ---> : ${ProjectCollection.address}`);
 
+  const ContractRegistry = await deploy("ContractRegistry");
+  console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
+
+  const BatchCollection = await deploy("BatchCollection", [ContractRegistry.address]);
+  console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
+  
   const ProjectERC20Factory = await deploy("ProjectERC20Factory", [ContractRegistry.address]);
   console.log(`ProjectERC20Factory.address ---> : ${ProjectERC20Factory.address}`);
 
