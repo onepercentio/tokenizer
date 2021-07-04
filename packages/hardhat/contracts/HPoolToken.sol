@@ -17,11 +17,13 @@ contract HPoolToken is Context, ERC20, Ownable {
     uint256 public _totalSupply = 0;
 
     // Describes the allowe attributes as arrays per set
+    // Note: pids (project identifiers) probably not needed
     struct  AttributeSet {
-        string[] vintages;
-        string[] region;
-        string[] standard;
-        string[] pids;
+        uint16[] vintages;
+        string[] regions;
+        string[] standards;
+        string[] methodologies;
+        // string[] pids;
     }
 
     // All allowed sets
@@ -34,18 +36,17 @@ contract HPoolToken is Context, ERC20, Ownable {
         string[] memory _vintages,
         string[] memory _regions,
         string[] memory _standards,
-        string[] memory _pids
+        string[] memory _methodologies
         ) public onlyOwner {
         AttributeSet memory set;
 
         set.vintages = _vintages;
-        set.vintages = _regions;
-        set.vintages = _standards;
-        set.vintages = _pids;
+        set.regions = _regions;
+        set.standards = _standards;
+        set.methodologies = _methodologies;
 
         allowedSets.push(set);
     }
-
 
     // Wrapper for external functions
     function approveExternal(address erc20Addr, address spender, uint amount) public {
@@ -61,8 +62,13 @@ contract HPoolToken is Context, ERC20, Ownable {
     }
 
     // Checks if an ERC20 contract is whitelisted
-    function checkWhiteListed(address collection) internal view onlyOwner returns (bool) {
-    }
+    function checkWhiteListed(address erc20Addr) internal view returns (bool) {
+        uint v = IERC20(erc20Addr).vintage;
+        string memory r = IERC20(erc20Addr).region;
+        string memory std = IERC20(erc20Addr).standard;
+        string memory m = IERC20(erc20Addr).methodology;
 
+
+    }
 
 }

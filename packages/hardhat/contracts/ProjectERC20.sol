@@ -21,7 +21,14 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     uint256 private _totalSupply = 0;
 
     string public vintage;
-    string public projectIdentifier;
+    string public pid;
+
+    // Attributes relevant for harmonizer pools
+    uin16 public vintage;
+    string public region;
+    string public standard;
+    string public methodology;
+
     address public contractRegistry;
 
     constructor (
@@ -31,7 +38,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         string memory _vintage,
         address _contractRegistry
         ) ERC20(name_, symbol_) {
-        projectIdentifier = _projectIdentifier;
+        pid = _projectIdentifier;
         vintage = _vintage;
         contractRegistry = _contractRegistry;
     }
