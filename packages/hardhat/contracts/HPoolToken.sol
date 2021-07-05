@@ -63,7 +63,7 @@ contract HPoolToken is Context, ERC20, Ownable {
         _mint(msg.sender, amount);
     }
 
-    // Checks if an ERC20 contract is whitelisted
+    // Checks whether incoming pERC20 token matches the accepted criteria/attributes 
     function checkWhiteListed(address erc20Addr) internal view returns (bool) {
         uint16 v = ProjectERC20(erc20Addr).vintage();
         string memory r = ProjectERC20(erc20Addr).region();
@@ -75,10 +75,17 @@ contract HPoolToken is Context, ERC20, Ownable {
         bool stdMatch  = false;
         bool mMatch  = false; 
         
+        // Length of struct array
+        uint256 setLen = allowedSets.length;
+
+        // Here: For loop, looping through set array
+        // for (uint i = 0; i < setLen-1; i++) {
+        // ...
+
         uint256 vlen = allowedSets[0].vintages.length;
         uint256 rlen = allowedSets[0].regions.length;
 
-        for (uint i = 0; i < rlen-1; i++) {
+        for (uint i = 0; i < vlen-1; i++) {
             if (allowedSets[0].vintages[i]==v) {
                 vMatch = true;
                 break;
@@ -88,7 +95,7 @@ contract HPoolToken is Context, ERC20, Ownable {
             }
         }
         
-        for (uint i = 0; i < vlen-1; i++) {
+        for (uint i = 0; i < rlen-1; i++) {
             if (keccak256(abi.encodePacked(allowedSets[0].regions[i]))==keccak256(abi.encodePacked(r))) {
                 rMatch = true;
                 break;
