@@ -70,6 +70,38 @@ contract HPoolToken is Context, ERC20, Ownable {
         string memory std = ProjectERC20(erc20Addr).standard();
         string memory m = ProjectERC20(erc20Addr).methodology();
 
+        bool vMatch = false;
+        bool rMatch  = false;
+        bool stdMatch  = false;
+        bool mMatch  = false; 
+        
+        uint256 vlen = allowedSets[0].vintages.length;
+        uint256 rlen = allowedSets[0].regions.length;
+
+        for (uint i = 0; i < rlen-1; i++) {
+            if (allowedSets[0].vintages[i]==v) {
+                vMatch = true;
+                break;
+            }
+            else {
+                continue;
+            }
+        }
+        
+        for (uint i = 0; i < vlen-1; i++) {
+            if (keccak256(abi.encodePacked(allowedSets[0].regions[i]))==keccak256(abi.encodePacked(r))) {
+                rMatch = true;
+                break;
+            }
+            else {
+                continue;
+            }
+        }
+        
+
+        // Final check if all attributes are matching
+        if (vMatch && rMatch && stdMatch && mMatch) return true;
+        else return false;
 
     }
 
