@@ -20,11 +20,10 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     // Initial supply = 0
     uint256 private _totalSupply = 0;
 
-    string public vintage;
-    string public pid;
+    string public projectId;
 
     // Attributes relevant for harmonizer pools
-    uin16 public vintage;
+    uint16 public vintage;
     string public region;
     string public standard;
     string public methodology;
@@ -34,11 +33,11 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     constructor (
         string memory name_, 
         string memory symbol_,
-        string memory _projectIdentifier,
-        string memory _vintage,
+        string memory _projectId,
+        uint16 _vintage,
         address _contractRegistry
         ) ERC20(name_, symbol_) {
-        pid = _projectIdentifier;
+        projectId = _projectId;
         vintage = _vintage;
         contractRegistry = _contractRegistry;
     }
@@ -53,7 +52,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         override 
         returns (bytes4) 
         {
-        (string memory pid, string memory vintage, string memory serialno, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        (string memory pid, uint16 vintage, string memory serialno, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
         console.log("DEBUG sol:", pid, vintage, serialno);
         console.log("DEBUG sol:", quantity, approved);
 
@@ -89,7 +88,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: _checkMatchingAttributes called");
 
         bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
-        bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
+        bytes32 pid20 = keccak256(abi.encodePacked(projectId));
 
         if (pid20 == pid721) { 
             return true;

@@ -2,13 +2,13 @@ const { expect } = require("chai");
 // const { ethers } = require("hardhat-ethers");
 
 describe("", () => {
-  it("-- Testing PTokenFactory.sol ---", async function () {
+  it("-- Overall deployment test flow ---", async function () {
     // ---------------------
     // Variables
 
     const name = "ProjectTreez";
     const symbol = "CO-GS-16";
-    const vintage = "2016";
+    const vintage = 2016;
 
     const projectIdentifier = "p001-CO-GS";
     const projectIdentifier2 = "p002-CO-GS";
@@ -58,34 +58,37 @@ describe("", () => {
     console.log("\n----\nDeploying ProjectERC20Factory:");
     factory = await ethers.getContractFactory("ProjectERC20Factory");
     // deploy and pass registry address to contructor
-    FactoryContract = await factory.deploy(ContractRegistry.address);
-    console.log(`setProjectERC20FactoryAddress(${FactoryContract.address})`);
-    await ContractRegistry.setProjectERC20FactoryAddress(FactoryContract.address);
+    ProjectERC20Factory = await factory.deploy(ContractRegistry.address);
+    console.log(`setProjectERC20FactoryAddress(${ProjectERC20Factory.address})`);
+    await ContractRegistry.setProjectERC20FactoryAddress(ProjectERC20Factory.address);
 
+
+    // ---------------------
+    // Deploying new pERC20 tokens
     console.log("Deploy new ProjectERC20 token via ProjectERC20Factory...");
-    await FactoryContract.deployNewToken(
-      name,
-      symbol,
-      projectIdentifier,
-      vintage,
-      ContractRegistry.address
-    );
-    await FactoryContract.deployNewToken(
-      name,
-      symbol,
-      projectIdentifier2,
-      vintage,
-      ContractRegistry.address
-    );
+    // await ProjectERC20Factory.deployNewToken(
+    //   name,
+    //   symbol,
+    //   projectIdentifier,
+    //   vintage,
+    //   ContractRegistry.address
+    // );
+    // await ProjectERC20Factory.deployNewToken(
+    //   name,
+    //   symbol,
+    //   projectIdentifier2,
+    //   vintage,
+    //   ContractRegistry.address
+    // );
 
     console.log("Deploying new ProjectERC20 from template...");
     const tokenId = 1;
-    await FactoryContract.deployFromTemplate(tokenId);
+    await ProjectERC20Factory.deployFromTemplate(tokenId);
     
     // retrieve array with all erc20 contract addresses
-    pERC20Array = await FactoryContract.getContracts();
+    pERC20Array = await ProjectERC20Factory.getContracts();
     console.log("logging getContracts()", pERC20Array);
-    // await FactoryContract.test();
+    // await ProjectERC20Factory.test();
 
     expect(await BatchCollection.ownerOf(tokenId)).to.equal(project.address);
     console.log("Owner of NFT:", await BatchCollection.ownerOf(tokenId));
@@ -105,20 +108,13 @@ describe("", () => {
     // ---------------------
     // Sending BatchNFTs to pERC20 contract
 
-    console.log(
-      "balance project:",
-      await BatchCollection.balanceOf(project.address)
-    );
+    console.log("balance project:", await BatchCollection.balanceOf(project.address));
+    console.log("owner of token:", await BatchCollection.ownerOf(tokenId));
     console.log("balance owner:", await BatchCollection.balanceOf(owner.address));
     console.log("balance pERC20:", await BatchCollection.balanceOf(pERC20Array[0]));
 
     console.log("\n----Sending BatchNFT from Project to Account 1:");
-    await BatchCollection.connect(project).transferFrom(
-      project.address,
-      owner.address,
-      1
-    );
-    // await BatchCollection.connect(project).safeTransferFrom(project.address, owner.address, 1);
+    await BatchCollection.connect(project).transferFrom(project.address, owner.address, 1);
 
     console.log(
       "balance project:",

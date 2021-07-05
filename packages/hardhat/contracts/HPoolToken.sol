@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/utils/Context.sol";
 
 import "./IContractRegistry.sol";
 import "./IBatchCollection.sol";
+import "./ProjectERC20.sol";
+
 
 contract HPoolToken is Context, ERC20, Ownable {
 
@@ -33,7 +35,7 @@ contract HPoolToken is Context, ERC20, Ownable {
 
     // Function to create new AttributeSets and add them to allowedSets
     function addAttributeSet(
-        string[] memory _vintages,
+        uint16[] memory _vintages,
         string[] memory _regions,
         string[] memory _standards,
         string[] memory _methodologies
@@ -63,10 +65,10 @@ contract HPoolToken is Context, ERC20, Ownable {
 
     // Checks if an ERC20 contract is whitelisted
     function checkWhiteListed(address erc20Addr) internal view returns (bool) {
-        uint v = IERC20(erc20Addr).vintage;
-        string memory r = IERC20(erc20Addr).region;
-        string memory std = IERC20(erc20Addr).standard;
-        string memory m = IERC20(erc20Addr).methodology;
+        uint16 v = ProjectERC20(erc20Addr).vintage();
+        string memory r = ProjectERC20(erc20Addr).region();
+        string memory std = ProjectERC20(erc20Addr).standard();
+        string memory m = ProjectERC20(erc20Addr).methodology();
 
 
     }

@@ -10,8 +10,10 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "hardhat/console.sol";
 
 import "./IContractRegistry.sol";
+import "./IBatchCollection.sol";
 
-contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
+
+contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
     using Address for address;
@@ -33,7 +35,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
         string projectIdentifier;
-        string vintage;
+        uint16 vintage;
         string serialNumber;
         uint256 quantity;
         bool confirmed;
@@ -64,19 +66,19 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         emit BatchRetirementConfirmed(tokenId);
     }
 
-    function getProjectIdent(uint256 tokenId) public view returns (string memory) {
+    function getProjectIdent(uint256 tokenId) public view override returns (string memory) {
         return nftList[tokenId].projectIdentifier;
     }
 
-    function getQuantity(uint256 tokenId) public view returns (uint) {
+    function getQuantity(uint256 tokenId) public view override returns (uint) {
         return nftList[tokenId].quantity;
     }
 
-    function getConfirmationStatus(uint256 tokenId) public view returns (bool) {
+    function getConfirmationStatus(uint256 tokenId) public view override returns (bool) {
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view returns (string memory, string memory, string memory, uint, bool) {
+   function getNftData(uint256 tokenId) public view override returns (string memory, uint16, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
             nftList[tokenId].vintage,
@@ -87,7 +89,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {       
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {      
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         safeTransferFrom(from, to, tokenId, "");
     }
@@ -150,7 +152,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     function mintBatchWithData(
         address to,
         string memory _projectIdentifier,
-        string memory _vintage,
+        uint16 vintage,
         string memory _serialNumber,
         uint256 quantity)
         public
@@ -167,7 +169,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         emit BatchMinted(to, _serialNumber, quantity);
 
         nftList[newItemId].projectIdentifier = _projectIdentifier;
-        nftList[newItemId].vintage = _vintage;
+        nftList[newItemId].vintage = vintage;
         nftList[newItemId].serialNumber = _serialNumber;
         nftList[newItemId].quantity = quantity;
         nftList[newItemId].confirmed = false;

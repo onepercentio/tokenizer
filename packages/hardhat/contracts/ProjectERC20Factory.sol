@@ -12,41 +12,44 @@ contract ProjectERC20Factory {
 
     event TokenCreated(address tokenAddress);
 
-    address[] private deployedContracts; 
     address public contractRegistry;
-    mapping (string => address) public pContractRegistry;
+
+    address[] private deployedContracts; // Probably obsolete, moved to registry
+    mapping (string => address) public pContractRegistry; // Probably obsolete, moved to registry
 
     constructor (address _contractRegistry) {
         contractRegistry = _contractRegistry;
     }
 
+
     function deployNewToken(
         string memory _name, 
         string memory _symbol,
         string memory _projectIdentifier,
-        string memory _vintage,
+        uint16 _vintage,
         address _contractRegistry) 
     public {
-
-        string memory _pTokenIdentifier = append(_name, _symbol, _projectIdentifier, _vintage);
-        // Necessary to avoid two of the same project-tokens being deployed with differing symbol/name
-        require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
+        // string memory _pTokenIdentifier = append(_name, _symbol, _projectIdentifier);
+        // // Necessary to avoid two of the same project-tokens being deployed with differing symbol/name
+        // require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
 
         ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage, _contractRegistry);
 
         // Register deployed ERC20 in ContractRegistry
         IContractRegistry(contractRegistry).addERC20(address(t));
         
+        // Move registration to ContractRegistry
         deployedContracts.push(address(t));
-        pContractRegistry[_pTokenIdentifier] = address(t);
+        pContractRegistry[_projectIdentifier] = address(t);
 
         emit TokenCreated(address(t));
     }
 
+
      // Deploy providing an NFT as template, currently would work only with one single collection
      function deployFromTemplate(uint256 tokenId) public {
         address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
-        (string memory pid, string memory vintage, , , ) = IBatchCollection(collection).getNftData(tokenId);
+        (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getNftData(tokenId);
 
         require(!checkExistence(pid), "Matching pERC20 already exists");
         /// @TODO: Needs some consideration about automatic naming
