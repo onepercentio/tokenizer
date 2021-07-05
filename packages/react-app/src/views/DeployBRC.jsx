@@ -21,12 +21,12 @@ export default function Tokenize({
   const userBatches = useContractReader(readContracts, "BatchCollection", "tokenIdsOfOwner", [address]);
   const setMintedEvent = useEventListener(readContracts, "BatchCollection", "BatchMinted", localProvider, 1);
 
-  // let contractAddress = "";
+  let contractAddress = "";
 
-  // if (readContracts) {
-  //   contractAddress = readContracts.BatchCollection.address;
-  //   console.log(contractAddress);
-  // }
+  if (readContracts) {
+    contractAddress = readContracts.BatchCollection.address;
+    console.log(contractAddress);
+  }
 
   const history = useHistory();
   const [isMinted, setIsMinted] = useState(false);
@@ -102,12 +102,12 @@ export default function Tokenize({
                   <br />
                   <SimpleGrid columns={2} fontFamily="Cousine">
                     <Box fontWeight="bold">Claim {i + 1}:</Box>
-                    <Box>{address + batch}</Box>
+                    <Box>{contractAddress + "#" + batch}</Box>
 
                     <Box>
                       <Button
                         onClick={() => {
-                          takeToTokenization(address + batch);
+                          takeToTokenization(contractAddress + "-" + batch);
                         }}
                       >
                         Continue

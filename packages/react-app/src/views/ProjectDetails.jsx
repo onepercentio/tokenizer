@@ -16,12 +16,18 @@ export default function ProjectDetails({
   readContracts,
   writeContracts,
 }) {
+  // let contractAddress = "";
+
+  // if (readContracts) {
+  //   contractAddress = readContracts.BatchCollection.address;
+  //   console.log(contractAddress);
+  // }
+
   const url = window.location.href.split("/");
   const serialNo = url.pop().split("-");
   let project = "";
 
-  const path = url.pop();
-  const tokenId = path.replace(address, "");
+  const tokenId = url.pop().split("-").pop();
 
   for (let i = 0; i < projects.length; i++) {
     if (projects[i].resourceIdentifier === serialNo[9]) {
