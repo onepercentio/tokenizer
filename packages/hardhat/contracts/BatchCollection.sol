@@ -129,8 +129,38 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
+    /// @notice Returns a list of all BatchIDs assigned to an address.
+    function tokenIdsOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
+        uint256 tokenCount = balanceOf(_owner);
+
+        if (tokenCount == 0) 
+        {
+            // Return an empty array
+            return new uint256[](0);
+        } 
+        else 
+        {
+            uint256[] memory result = new uint256[](tokenCount);
+            uint256 totalNfts = totalSupply();
+            uint256 resultIndex = 0;
+
+            // We count on the fact that all nfts have IDs starting at 1 and increasing
+            // sequentially up to the totalNfts count.
+            uint256 nftId;
+
+            for (nftId = 1; nftId <= totalNfts; nftId++) {
+                if (batchIndexToOwner[nftId] == _owner) {
+                    result[resultIndex] = nftId;
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+    }
+
     /// @notice Returns a list of all unconfirmed NFTs waiting for approval
-    function tokenizationRequests(address _admin) external view returns(NFTData[] memory ownerTokens) 
+    function tokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
     {
         uint256 totalNfts = totalSupply();
         uint256 resultIndex = 0;
@@ -152,6 +182,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return result;
     }
 
+    // Entry function to bring offsets on-chain
+    // Updates NFT claiming that 1 to n tons have been retired
+    // Confirmation status is set to false
     function updateBatchWithData(
         address to,
         uint256 tokenId,
@@ -173,6 +206,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return tokenId;
     }
 
+    // Entry function to bring offsets on-chain
+    // Mints an NFT claiming that 1 to n tons have been retired
     function mintBatch (address to)
         public
         returns (uint256)
@@ -188,6 +223,15 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         emit BatchMinted(to);
 
         return newItemId;
+    }
+
+    function approveBatch (address _admin, uint256 tokenId)
+        public
+        returns (uint256)
+    {
+        nftList[tokenId].confirmed = true;
+
+        return tokenId;
     }
 
 }

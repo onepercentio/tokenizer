@@ -20,11 +20,16 @@ export default function ProjectDetails({
   const serialNo = url.pop().split("-");
   let project = "";
 
+  const path = url.pop();
+  const tokenId = path.replace(address, "");
+
   for (let i = 0; i < projects.length; i++) {
     if (projects[i].resourceIdentifier === serialNo[9]) {
       project = projects[i];
     }
   }
+
+  console.log("project is ", project === "");
 
   function notifyDiscord(serialNum) {
     const request = new XMLHttpRequest();
@@ -42,76 +47,83 @@ export default function ProjectDetails({
 
   return (
     <div>
-      {/* <Center> */}
-      {/* <Flex align="center" justify="center" direction="column"> */}
-      {/* <Box p="6" m="4" borderWidth="1px" rounded="lg" flexBasis={['auto', '45%']} boxShadow="dark-lg"> */}
       <Container>
         <AppContainer>
-          <Stack direction={["column", "row"]} mb={2}>
-            <Text fontSize="20px">Tokenize your</Text>
-            <Text fontSize="20px" color="#00F6AA">
-              Carbon Credits
-            </Text>
-          </Stack>
-          <Divider />
-          <Text fontSize="30" mt={4} mb={6}>
-            Confirm project details
-          </Text>
-          <img src="https://verra.org/wp-content/uploads/2016/07/6289228289_7be6a5c962_b.jpg" />
-          <br />
-          <br />
-          <SimpleGrid fontFamily="Cousine" columns={2} spacing={10}>
-            <Box align="right" fontWeight="bold">
-              Project Name:{" "}
-            </Box>
-            <Box align="left">{project.resourceName}</Box>
-            <Box align="right" fontWeight="bold">
-              Location:{" "}
-            </Box>
-            <Box align="left">
-              {project.country}, {project.region}
-            </Box>
-            <Box align="right" fontWeight="bold">
-              Date:{" "}
-            </Box>
-            <Box align="left"> {project.createDate}</Box>
-            <Box align="right" fontWeight="bold">
-              Program:{" "}
-            </Box>
-            <Box align="left"> {project.program}</Box>
-            <Box align="right" fontWeight="bold">
-              Protocol:{" "}
-            </Box>
-            <Box align="left"> {project.protocols}</Box>
-            <Box align="right" fontWeight="bold">
-              Number of Credits:
-            </Box>
-            <Box align="left"> {project.estAnnualEmissionReductions}</Box>
-          </SimpleGrid>
-          <br />
+          {project === "" || serialNo.length < 11 ? (
+            <Heading>Invalid Serial Number</Heading>
+          ) : (
+            <>
+              <Stack direction={["column", "row"]} mb={2}>
+                <Text fontSize="20px">Tokenize your</Text>
+                <Text fontSize="20px" color="#00F6AA">
+                  Carbon Credits
+                </Text>
+              </Stack>
+              <Divider />
+              <Text fontSize="30" mt={4} mb={6}>
+                Confirm project details
+              </Text>
+              <img
+                src="https://verra.org/wp-content/uploads/2016/07/6289228289_7be6a5c962_b.jpg"
+                alt="Project details"
+              />
+              <br />
+              <br />
+              <SimpleGrid fontFamily="Cousine" columns={2} spacing={10}>
+                <Box align="right" fontWeight="bold">
+                  Project Name:{" "}
+                </Box>
+                <Box align="left">{project.resourceName}</Box>
+                <Box align="right" fontWeight="bold">
+                  Location:{" "}
+                </Box>
+                <Box align="left">
+                  {project.country}, {project.region}
+                </Box>
+                <Box align="right" fontWeight="bold">
+                  Date:{" "}
+                </Box>
+                <Box align="left"> {project.createDate}</Box>
+                <Box align="right" fontWeight="bold">
+                  Program:{" "}
+                </Box>
+                <Box align="left"> {project.program}</Box>
+                <Box align="right" fontWeight="bold">
+                  Protocol:{" "}
+                </Box>
+                <Box align="left"> {project.protocols}</Box>
+                <Box align="right" fontWeight="bold">
+                  Number of Credits:
+                </Box>
+                <Box align="left"> {project.estAnnualEmissionReductions}</Box>
+              </SimpleGrid>
+              <br />
 
-          <Button
-            onClick={() => {
-              console.log("mint batch!!!");
-              console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`);
-              alert("You will see a notification when your transcation has been processed. This may take a moment.");
-              notifyDiscord(serialNo.join("-"));
-              tx(
-                writeContracts.BatchCollection.updateBatchWithData(
-                  address,
-                  project.resourceIdentifier,
-                  "Sample Vintage",
-                  serialNo.join("-"),
-                  project.estAnnualEmissionReductions,
-                ),
-              );
-            }}
-          >
-            Tokenize
-          </Button>
-          {/* </Box> */}
-          {/* </Flex> */}
-          {/* </Center> */}
+              <Button
+                onClick={() => {
+                  console.log("mint batch!!!");
+                  console.log(`Notify discord at ${process.env.REACT_APP_NOTIFY_TOKENIZATION}`);
+                  // eslint-disable-next-line no-alert
+                  alert(
+                    "You will see a notification when your transcation has been processed. This may take a moment.",
+                  );
+                  notifyDiscord(serialNo.join("-"));
+                  tx(
+                    writeContracts.BatchCollection.updateBatchWithData(
+                      address,
+                      tokenId,
+                      project.resourceIdentifier,
+                      serialNo[10] + "-" + serialNo[11],
+                      serialNo.join("-"),
+                      project.estAnnualEmissionReductions,
+                    ),
+                  );
+                }}
+              >
+                Tokenize
+              </Button>
+            </>
+          )}
         </AppContainer>
       </Container>
     </div>

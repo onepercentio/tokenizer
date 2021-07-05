@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { List } from "antd";
-import { Heading, Text, Flex, Box, Button, Input, Divider, SimpleGrid, Center } from "@chakra-ui/react";
-import { parseEther, formatEther } from "@ethersproject/units";
-import { useContractReader, useEventListener, useResolveName } from "../hooks";
+import React from "react";
+import { Heading, Text, Box, Button, Divider, SimpleGrid, Center } from "@chakra-ui/react";
+import { useContractReader } from "../hooks";
 
 export default function Admin({
   props,
@@ -16,9 +14,7 @@ export default function Admin({
   readContracts,
   writeContracts,
 }) {
-
-  const unapprovedTokens = useContractReader(readContracts, "BatchCollection", "tokenizationRequests", [address]);;
-  console.log("unapproved tokens: ", unapprovedTokens);
+  const unapprovedTokens = useContractReader(readContracts, "BatchCollection", "tokenizationRequests");
 
   return (
     <div>
@@ -35,55 +31,63 @@ export default function Admin({
                 return <List.Item>{item}</List.Item>;
               }}
             /> */}
-          <Text>
-            There are{" "}
-            <span style={{ color: "#00F6AA" }}>
-              {unapprovedTokens && unapprovedTokens.length}
-            </span>{" "}
-            unapproved tokens waiting for approval.
-          </Text>
-          {unapprovedTokens && unapprovedTokens.length
-            ? unapprovedTokens.map(token => (
-                <>
-                  <br/>
-                  <br/>
-                  <SimpleGrid columns={2} spacing={10} mb={2} fontFamily="Cousine">
-                    <Box align="right" fontWeight="bold">
-                      Resource Identifier:
-                    </Box>
-                    <Box align="left">{token[0]}</Box>
-                    
-                    <Box align="right" fontWeight="bold">
-                      Status:
-                    </Box>
-                    {token[4] === false ?
-                    <Box align="left" color="red">unconfirmed</Box>
-                    :
-                    <Box align="left" color="green">confirmed</Box>
-                    }
-                    
-                    <Box align="right" fontWeight="bold">
-                      Vintage:
-                    </Box>
-                    <Box align="left">{token[1]}</Box>
-                    
-                    <Box align="right" fontWeight="bold">
-                      Serial Number:
-                    </Box>
-                    <Box align="left">{token[2]}</Box>
-                    
-                    <Box align="right" fontWeight="bold">
-                      Quantity:
-                    </Box>
-                    <Box align="left">
-                      {token[3] && typeof token[3] !== "undefined" ? parseInt(token[3]._hex, 16) : ""}
-                    </Box>
-                  </SimpleGrid>
-                  <Button mb={2}> Approve </Button>
-                  <Divider />
-                </>
-              ))
-            : ""}
+            <Text>
+              There are <span style={{ color: "#00F6AA" }}>{unapprovedTokens ? unapprovedTokens.length : 0}</span>{" "}
+              unapproved tokens waiting for approval.
+            </Text>
+            {unapprovedTokens && unapprovedTokens.length
+              ? unapprovedTokens.map(token => (
+                  <>
+                    <br />
+                    <br />
+                    <SimpleGrid columns={2} spacing={10} mb={2} fontFamily="Cousine">
+                      <Box align="right" fontWeight="bold">
+                        Resource Identifier:
+                      </Box>
+                      <Box align="left">{token[0]}</Box>
+
+                      <Box align="right" fontWeight="bold">
+                        Status:
+                      </Box>
+                      {token[4] === false ? (
+                        <Box align="left" color="red">
+                          unconfirmed
+                        </Box>
+                      ) : (
+                        <Box align="left" color="green">
+                          confirmed
+                        </Box>
+                      )}
+
+                      <Box align="right" fontWeight="bold">
+                        Vintage:
+                      </Box>
+                      <Box align="left">{token[1]}</Box>
+
+                      <Box align="right" fontWeight="bold">
+                        Serial Number:
+                      </Box>
+                      <Box align="left">{token[2]}</Box>
+
+                      <Box align="right" fontWeight="bold">
+                        Quantity:
+                      </Box>
+                      <Box align="left">
+                        {token[3] && typeof token[3] !== "undefined" ? parseInt(token[3]._hex, 16) : ""}
+                      </Box>
+                    </SimpleGrid>
+                    <Button
+                      mb={2}
+                      // onClick={() => {
+                      //   tx(writeContracts.BatchCollection.approveBatch(address, tokenId));
+                      // }}
+                    >
+                      Approve
+                    </Button>
+                    <Divider />
+                  </>
+                ))
+              : ""}
           </div>
         </Box>
         {/* </Flex> */}
