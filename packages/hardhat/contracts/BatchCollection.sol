@@ -197,29 +197,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         return result;
     }
 
-    // Entry function to bring offsets on-chain
-    // Updates NFT claiming that 1 to n tons have been retired
-    // Confirmation status is set to false
-    function updateBatchWithData(
-        address to,
-        uint256 tokenId,
-        string memory _projectIdentifier,
-        string memory _vintage,
-        string memory _serialNumber,
-        uint256 quantity)
-        public
-        returns (uint256)
-    {
-        nftList[tokenId].projectIdentifier = _projectIdentifier;
-        nftList[tokenId].vintage = _vintage;
-        nftList[tokenId].serialNumber = _serialNumber;
-        nftList[tokenId].quantity = quantity;
-        nftList[tokenId].confirmed = false;
 
-        emit BatchUpdated(to, _serialNumber, quantity);
-        
-        return tokenId;
-    }
 
     // Entry function to bring offsets on-chain
     // Mints an NFT claiming that 1 to n tons have been retired
@@ -236,18 +214,60 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         batchIndexToOwner[newItemId] = to;
 
         _safeMint(to, newItemId);
+        nftList[newItemId].confirmed = false;
         emit BatchMinted(to);
 
         return newItemId;
     }
 
-    function approveBatch (address _admin, uint256 tokenId)
+
+    // Updates NFT claiming that 1 to n tons have been retired
+    function updateBatchWithData(
+        address to,
+        uint256 tokenId,
+        string memory _projectIdentifier,
+        string memory _vintage,
+        string memory _serialNumber,
+        uint256 quantity)
         public
         returns (uint256)
     {
-        nftList[tokenId].confirmed = true;
+        nftList[tokenId].projectIdentifier = _projectIdentifier;
+        nftList[tokenId].vintage = _vintage;
+        nftList[tokenId].serialNumber = _serialNumber;
+        nftList[tokenId].quantity = quantity;
 
+        emit BatchUpdated(to, _serialNumber, quantity);
+        
         return tokenId;
     }
+
+    // LEGACY: Entry function to bring offsets on-chain
+    function mintBatchWithData(
+            address to,
+            string memory _projectIdentifier,
+            string memory _vintage,
+            string memory _serialNumber,
+            uint256 quantity)
+            public
+            returns (uint256)
+        {
+            _tokenIds.increment();
+
+            uint256 newItemId = _tokenIds.current();
+            console.log("minting to ", to);
+            console.log("newItemId is ", newItemId);
+            batchIndexToOwner[newItemId] = to;
+
+            _safeMint(to, newItemId);
+
+            nftList[newItemId].projectIdentifier = _projectIdentifier;
+            nftList[newItemId].vintage = _vintage;
+            nftList[newItemId].serialNumber = _serialNumber;
+            nftList[newItemId].quantity = quantity;
+            nftList[newItemId].confirmed = false;
+            
+            return newItemId;
+        }
 
 }
