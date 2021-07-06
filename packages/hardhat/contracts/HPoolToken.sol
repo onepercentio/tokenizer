@@ -96,7 +96,7 @@ contract HPoolToken is Context, ERC20, Ownable {
             uint256 vlen = allowedSets[x].vintages.length;
             uint256 rlen = allowedSets[x].regions.length;
             uint256 slen = allowedSets[x].standards.length;
-            uint256 mlen = allowedSets[x].standards.length;
+            uint256 mlen = allowedSets[x].methodologies.length;
 
             for (uint i = 0; i < vlen-1; i++) {
                 if (allowedSets[x].vintages[i]==v) {
