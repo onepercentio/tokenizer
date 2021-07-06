@@ -18,8 +18,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
     using SafeMath for uint256;
     using Address for address;
 
-    event BatchMinted(address sender, string serialNumber, uint quantity);
-
+    event BatchMinted(address sender);
+    event BatchUpdated(address sender, string serialNumber, uint quantity);
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
@@ -146,11 +146,65 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         }
     }
 
+    /// @notice Returns a list of all BatchIDs assigned to an address.
+    function tokenIdsOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
+        uint256 tokenCount = balanceOf(_owner);
+
+        if (tokenCount == 0) 
+        {
+            // Return an empty array
+            return new uint256[](0);
+        } 
+        else 
+        {
+            uint256[] memory result = new uint256[](tokenCount);
+            uint256 totalNfts = totalSupply();
+            uint256 resultIndex = 0;
+
+            // We count on the fact that all nfts have IDs starting at 1 and increasing
+            // sequentially up to the totalNfts count.
+            uint256 nftId;
+
+            for (nftId = 1; nftId <= totalNfts; nftId++) {
+                if (batchIndexToOwner[nftId] == _owner) {
+                    result[resultIndex] = nftId;
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    /// @notice Returns a list of all unconfirmed NFTs waiting for approval
+    function tokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
+    {
+        uint256 totalNfts = totalSupply();
+        uint256 resultIndex = 0;
+        NFTData[] memory result = new NFTData[](totalNfts);
+
+        // We count on the fact that all nfts have IDs starting at 1 and increasing
+        // sequentially up to the totalNfts count.
+        uint256 nftId;
+
+        for (nftId = 1; nftId <= totalNfts; nftId++) 
+        {
+            if (nftList[nftId].confirmed == false) 
+            {
+                result[resultIndex] = nftList[nftId];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
     // Entry function to bring offsets on-chain
-    // Mints an NFT claiming that 1 to n tons have been retired
-    // On mint confirmation status is set to fale
-    function mintBatchWithData(
+    // Updates NFT claiming that 1 to n tons have been retired
+    // Confirmation status is set to false
+    function updateBatchWithData(
         address to,
+        uint256 tokenId,
         string memory _projectIdentifier,
         uint16 vintage,
         string memory _serialNumber,
@@ -158,23 +212,53 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         public
         returns (uint256)
     {
+        nftList[tokenId].projectIdentifier = _projectIdentifier;
+        nftList[tokenId].vintage = _vintage;
+        nftList[tokenId].serialNumber = _serialNumber;
+        nftList[tokenId].quantity = quantity;
+        nftList[tokenId].confirmed = false;
+
+        emit BatchUpdated(to, _serialNumber, quantity);
+        
+        return tokenId;
+    }
+
+    // Entry function to bring offsets on-chain
+    // Mints an NFT claiming that 1 to n tons have been retired
+    function mintBatch (address to)
+        public
+        returns (uint256)
+    {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
-        console.log("minting Batch NFT to ", to);
+
+        console.log("minting BRC to ", to);
         console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
 
         _safeMint(to, newItemId);
-        emit BatchMinted(to, _serialNumber, quantity);
+        emit BatchMinted(to);
 
+<<<<<<< HEAD
         nftList[newItemId].projectIdentifier = _projectIdentifier;
         nftList[newItemId].vintage = vintage;
         nftList[newItemId].serialNumber = _serialNumber;
         nftList[newItemId].quantity = quantity;
         nftList[newItemId].confirmed = false;
         
+=======
+>>>>>>> master
         return newItemId;
+    }
+
+    function approveBatch (address _admin, uint256 tokenId)
+        public
+        returns (uint256)
+    {
+        nftList[tokenId].confirmed = true;
+
+        return tokenId;
     }
 
 }

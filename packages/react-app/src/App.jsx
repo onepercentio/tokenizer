@@ -38,7 +38,7 @@ import {
 } from "./hooks";
 import { Header, Account, Faucet, Ramp, Contract, GasGauge, Address, Balance, Wallet } from "./components";
 import { Transactor } from "./helpers";
-import { Tokenize, Admin, Landing, AccountPage, Project, HowWorks, ProjectDetails } from "./views";
+import { Tokenize, Admin, Landing, AccountPage, Project, HowWorks, ProjectDetails, DeployBRC } from "./views";
 import { DAI_ABI, DAI_ADDRESS, INFURA_ID, NETWORK, NETWORKS } from "./constants";
 import ExampleUI from "./views/ExampleUI";
 /*
@@ -175,16 +175,6 @@ function App(props) {
               ))} */}
                       <Link
                         className="nav-link"
-                        key="/"
-                        onClick={() => {
-                          setRoute("/");
-                        }}
-                        to="/"
-                      >
-                        home
-                      </Link>
-                      <Link
-                        className="nav-link"
                         key="/tokenize"
                         onClick={() => {
                           setRoute("/tokenize");
@@ -254,16 +244,6 @@ function App(props) {
                   <Stack as="nav" spacing={4}>
                     <Link
                       className="nav-link"
-                      key="/"
-                      onClick={() => {
-                        setRoute("/");
-                      }}
-                      to="/"
-                    >
-                      home
-                    </Link>
-                    <Link
-                      className="nav-link"
                       key="/tokenize"
                       onClick={() => {
                         setRoute("/tokenize");
@@ -281,7 +261,17 @@ function App(props) {
                       }}
                       to="/account"
                     >
-                      account
+                      your claims
+                    </Link>
+                    <Link
+                      className="nav-link"
+                      key="/how-it-works"
+                      onClick={() => {
+                        setRoute("/how-it-works");
+                      }}
+                      to="/how-it-works"
+                    >
+                      how it works
                     </Link>
                   </Stack>
                 </Box>
@@ -315,7 +305,20 @@ function App(props) {
               <Route exact path="/">
                 <Landing />
               </Route>
-              <Route path="/tokenize">
+              <Route exact path="/tokenize">
+                <DeployBRC
+                  address={address}
+                  userProvider={userProvider}
+                  mainnetProvider={mainnetProvider}
+                  localProvider={localProvider}
+                  yourLocalBalance={yourLocalBalance}
+                  price={price}
+                  tx={tx}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                />
+              </Route>
+              <Route exact path="/tokenize/:nftHash">
                 <Tokenize
                   address={address}
                   userProvider={userProvider}
@@ -328,47 +331,8 @@ function App(props) {
                   readContracts={readContracts}
                 />
               </Route>
-              <Route path="/admin">
-                <Admin
-                  address={address}
-                  userProvider={userProvider}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                />
-              </Route>
-              <Route path="/project">
-                <Project
-                  address={address}
-                  userProvider={userProvider}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                />
-              </Route>
-              <Route path="/how-it-works">
-                <HowWorks
-                  address={address}
-                  userProvider={userProvider}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                />
-              </Route>
-              <Route path="/exampleui">
-                <ExampleUI
+              <Route exact path="/tokenizer/:path/:serialNo">
+                <ProjectDetails
                   address={address}
                   userProvider={userProvider}
                   mainnetProvider={mainnetProvider}
@@ -393,8 +357,34 @@ function App(props) {
                   readContracts={readContracts}
                 />
               </Route>
-              <Route path="/tokenizer/:serialNo">
-                <ProjectDetails
+              <Route path="/admin">
+                <Admin
+                  address={address}
+                  userProvider={userProvider}
+                  mainnetProvider={mainnetProvider}
+                  localProvider={localProvider}
+                  yourLocalBalance={yourLocalBalance}
+                  price={price}
+                  tx={tx}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                />
+              </Route>
+              <Route path="/how-it-works">
+                <HowWorks
+                  address={address}
+                  userProvider={userProvider}
+                  mainnetProvider={mainnetProvider}
+                  localProvider={localProvider}
+                  yourLocalBalance={yourLocalBalance}
+                  price={price}
+                  tx={tx}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                />
+              </Route>
+              <Route path="/project">
+                <Project
                   address={address}
                   userProvider={userProvider}
                   mainnetProvider={mainnetProvider}
