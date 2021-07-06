@@ -50,7 +50,13 @@ contract HPoolToken is Context, ERC20, Ownable {
         allowedSets.push(set);
     }
 
-    // Wrapper for external functions
+    // Shall give the owner the ability to remove certain attribute sets
+    function removeAttributeSet(uint index) public onlyOwner {
+        delete allowedSets[index];
+    }
+
+
+    // Wrapper for external functions to approve token pre-deposit
     function approveExternal(address erc20Addr, address spender, uint amount) public {
         IERC20(erc20Addr).approve(spender, amount);
     } 

@@ -240,15 +240,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         _safeMint(to, newItemId);
         emit BatchMinted(to);
 
-<<<<<<< HEAD
-        nftList[newItemId].projectIdentifier = _projectIdentifier;
-        nftList[newItemId].vintage = vintage;
-        nftList[newItemId].serialNumber = _serialNumber;
-        nftList[newItemId].quantity = quantity;
-        nftList[newItemId].confirmed = false;
-        
-=======
->>>>>>> master
         return newItemId;
     }
 
