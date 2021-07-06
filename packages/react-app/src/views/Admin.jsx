@@ -79,7 +79,7 @@ export default function Admin({
                     <Button
                       mb={2}
                       // onClick={() => {
-                      //   tx(writeContracts.BatchCollection.approveBatch(address, tokenId));
+                      //   tx(writeContracts.BatchCollection.confirmRetirement(tokenId));
                       // }}
                     >
                       Approve
