@@ -229,7 +229,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         string memory _vintage,
         string memory _serialNumber,
         uint256 quantity)
-        public
+        public onlyVerifier
         returns (uint256)
     {
         nftList[tokenId].projectIdentifier = _projectIdentifier;
@@ -241,6 +241,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         
         return tokenId;
     }
+
 
     // LEGACY: Entry function to bring offsets on-chain
     function mintBatchWithData(
