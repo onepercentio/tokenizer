@@ -107,7 +107,7 @@ contract HPoolToken is Context, ERC20, Ownable {
                     continue;
                 }
             }
-            
+
             for (uint i = 0; i < rlen-1; i++) {
                 if (keccak256(abi.encodePacked(allowedSets[x].regions[i]))==keccak256(abi.encodePacked(r))) {
                     rMatch = true;
@@ -120,7 +120,7 @@ contract HPoolToken is Context, ERC20, Ownable {
 
             for (uint i = 0; i < slen-1; i++) {
                 if (keccak256(abi.encodePacked(allowedSets[x].standards[i]))==keccak256(abi.encodePacked(s))) {
-                    rMatch = true;
+                    sMatch = true;
                     break;
                 }
                 else {
@@ -130,7 +130,7 @@ contract HPoolToken is Context, ERC20, Ownable {
 
             for (uint i = 0; i < mlen-1; i++) {
                 if (keccak256(abi.encodePacked(allowedSets[x].methodologies[i]))==keccak256(abi.encodePacked(m))) {
-                    rMatch = true;
+                    mMatch = true;
                     break;
                 }
                 else {
