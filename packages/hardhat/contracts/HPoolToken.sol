@@ -33,6 +33,7 @@ contract HPoolToken is Context, ERC20, Ownable {
 
     constructor(string memory name_, string memory _symbol) ERC20(name_, _symbol) {}
 
+
     // Function to create new AttributeSets and add them to allowedSets
     function addAttributeSet(
         uint16[] memory _vintages,
@@ -49,6 +50,7 @@ contract HPoolToken is Context, ERC20, Ownable {
 
         allowedSets.push(set);
     }
+
 
     // Shall give the owner the ability to remove certain attribute sets
     function removeAttributeSet(uint index) public onlyOwner {
@@ -70,52 +72,78 @@ contract HPoolToken is Context, ERC20, Ownable {
     }
 
     // Checks whether incoming pERC20 token matches the accepted criteria/attributes 
-    function checkWhiteListed(address erc20Addr) internal view returns (bool) {
+    function checkAttributeMatching(address erc20Addr) internal view returns (bool) {
+
+        // Querying the attributes from the incoming pERC20 token
         uint16 v = ProjectERC20(erc20Addr).vintage();
         string memory r = ProjectERC20(erc20Addr).region();
-        string memory std = ProjectERC20(erc20Addr).standard();
+        string memory s = ProjectERC20(erc20Addr).standard();
         string memory m = ProjectERC20(erc20Addr).methodology();
 
+        // Corresponding match variables
         bool vMatch = false;
         bool rMatch  = false;
-        bool stdMatch  = false;
+        bool sMatch  = false;
         bool mMatch  = false; 
         
         // Length of struct array
         uint256 setLen = allowedSets.length;
 
         // Here: For loop, looping through set array
-        // for (uint i = 0; i < setLen-1; i++) {
-        // ...
-
-        uint256 vlen = allowedSets[0].vintages.length;
-        uint256 rlen = allowedSets[0].regions.length;
-
-        for (uint i = 0; i < vlen-1; i++) {
-            if (allowedSets[0].vintages[i]==v) {
-                vMatch = true;
-                break;
-            }
-            else {
-                continue;
-            }
-        }
+        for (uint x = 0; x < setLen-1; x++) {
         
-        for (uint i = 0; i < rlen-1; i++) {
-            if (keccak256(abi.encodePacked(allowedSets[0].regions[i]))==keccak256(abi.encodePacked(r))) {
-                rMatch = true;
-                break;
+            // Every array might have a different length
+            uint256 vlen = allowedSets[x].vintages.length;
+            uint256 rlen = allowedSets[x].regions.length;
+            uint256 slen = allowedSets[x].standards.length;
+            uint256 mlen = allowedSets[x].standards.length;
+
+            for (uint i = 0; i < vlen-1; i++) {
+                if (allowedSets[x].vintages[i]==v) {
+                    vMatch = true;
+                    break;
+                }
+                else {
+                    continue;
+                }
             }
-            else {
-                continue;
+            
+            for (uint i = 0; i < rlen-1; i++) {
+                if (keccak256(abi.encodePacked(allowedSets[x].regions[i]))==keccak256(abi.encodePacked(r))) {
+                    rMatch = true;
+                    break;
+                }
+                else {
+                    continue;
+                }
             }
+
+            for (uint i = 0; i < slen-1; i++) {
+                if (keccak256(abi.encodePacked(allowedSets[x].standards[i]))==keccak256(abi.encodePacked(s))) {
+                    rMatch = true;
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+
+            for (uint i = 0; i < mlen-1; i++) {
+                if (keccak256(abi.encodePacked(allowedSets[x].methodologies[i]))==keccak256(abi.encodePacked(m))) {
+                    rMatch = true;
+                    break;
+                }
+                else {
+                    continue;
+                }
+            }
+
+            // Final check if all attributes are matching
+            if (vMatch && rMatch && sMatch && mMatch) return true;
+            else continue;
         }
-        
-
-        // Final check if all attributes are matching
-        if (vMatch && rMatch && stdMatch && mMatch) return true;
-        else return false;
-
+        // no matches found during search
+        return false;
     }
 
 }

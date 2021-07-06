@@ -223,12 +223,13 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
     }
 
 
-    // Updates NFT claiming that 1 to n tons have been retired
+    // Updates BatchNFT after Serialnumber has been verified
+    // Data is inserted by the verifier
     function updateBatchWithData(
         address to,
         uint256 tokenId,
         string memory _projectIdentifier,
-        string memory _vintage,
+        uint16 _vintage,
         string memory _serialNumber,
         uint256 quantity)
         public onlyVerifier
@@ -249,7 +250,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
     function mintBatchWithData(
             address to,
             string memory _projectIdentifier,
-            string memory _vintage,
+            uint16 _vintage,
             string memory _serialNumber,
             uint256 quantity)
             public
