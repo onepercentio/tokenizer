@@ -47,7 +47,7 @@ contract ProjectCollection is ERC721, Ownable {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
-        console.log("minting to ", to);
+        console.log("minting Project NFT to ", to);
         console.log("newItemId is ", newItemId);
         _mint(to, newItemId);
 
