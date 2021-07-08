@@ -64,12 +64,10 @@ contract HPoolToken is Context, ERC20, Ownable {
     }
 
 
-    // Wrapper for external functions to approve token pre-deposit
-    function approveExternal(address erc20Addr, address spender, uint amount) public {
-        IERC20(erc20Addr).approve(spender, amount);
-    } 
-
     function deposit(address erc20Addr, uint amount) public {
+        require(checkAttributeMatching(erc20Addr)==true, "The token sent is not accepted");
+        console.log("DEBUG deposit");
+
         // transfers token from sender (current owner) to this contract
         IERC20(erc20Addr).transferFrom(msg.sender, address(this), amount);
 
@@ -77,7 +75,8 @@ contract HPoolToken is Context, ERC20, Ownable {
         _mint(msg.sender, amount);
     }
 
-
+    // Redeem for underlying
+    function redeem(uint amount) public {}
 
 
     // Checks whether incoming pERC20 token matches the accepted criteria/attributes 
