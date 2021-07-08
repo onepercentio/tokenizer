@@ -18,6 +18,8 @@ contract HPoolToken is Context, ERC20, Ownable {
     // Initial supply = 0
     uint256 public _totalSupply = 0;
 
+    address public contractRegistry;
+
     // Describes the allowe attributes as arrays per set
     // Note: pids (project identifiers) probably not needed
     struct  AttributeSet {
@@ -31,12 +33,8 @@ contract HPoolToken is Context, ERC20, Ownable {
     // All allowed sets
     AttributeSet[] allowedSets;
 
-    constructor(string memory name_, string memory _symbol) ERC20(name_, _symbol) {}
-
-    // Testing purpose
-    function arrTest(uint16[] memory _vintages) public view {
-        console.log(_vintages[0]);
-        console.log(_vintages[1]);
+    constructor(string memory name_, string memory _symbol, address _contractRegistry) ERC20(name_, _symbol) {
+        contractRegistry = _contractRegistry;
     }
 
 
@@ -65,6 +63,9 @@ contract HPoolToken is Context, ERC20, Ownable {
 
 
     function deposit(address erc20Addr, uint amount) public {
+        // Verifiy that pERC20 is official token
+        require(IContractRegistry(contractRegistry).checkERC20(erc20Addr)==true, "pERC20 not official");
+        
         require(checkAttributeMatching(erc20Addr)==true, "The token sent is not accepted");
         console.log("DEBUG deposit");
 
@@ -77,6 +78,9 @@ contract HPoolToken is Context, ERC20, Ownable {
 
     // Redeem for underlying
     function redeem(uint amount) public {}
+
+    // Redeem, and call offset on underlying contracts
+    function offset(uint amount) public {}
 
 
     // Checks whether incoming pERC20 token matches the accepted criteria/attributes 
