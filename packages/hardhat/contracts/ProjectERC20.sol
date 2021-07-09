@@ -62,6 +62,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     //     contractRegistry = _contractRegistry;
     // }
 
+    
     function getAttributes() public view returns (uint16, string memory, string memory, string memory) {
         console.log("DEBUG: getAttributes", region, standard, methodology);
         return (
@@ -82,9 +83,9 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         override 
         returns (bytes4) 
         {
-        (string memory pid, uint16 vintage, string memory serialno, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
-        console.log("DEBUG sol:", pid, vintage, serialno);
-        console.log("DEBUG sol:", quantity, approved);
+        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        // console.log("DEBUG sol:", pid, vintage, serialno);
+        // console.log("DEBUG sol:", quantity, approved);
 
 
         // msg.sender is the BatchCollection contract

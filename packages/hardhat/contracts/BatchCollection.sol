@@ -211,8 +211,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
         uint256 newItemId = _tokenIds.current();
 
-        console.log("minting BRC to ", to);
-        console.log("newItemId is ", newItemId);
+        // console.log("minting BRC to ", to);
+        // console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
 
         _safeMint(to, newItemId);
@@ -259,8 +259,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
             _tokenIds.increment();
 
             uint256 newItemId = _tokenIds.current();
-            console.log("minting to ", to);
-            console.log("newItemId is ", newItemId);
+            console.log("DEBUG sol: minting to ", to);
+            console.log("DEBUG sol: newItemId is ", newItemId);
             batchIndexToOwner[newItemId] = to;
 
             _safeMint(to, newItemId);

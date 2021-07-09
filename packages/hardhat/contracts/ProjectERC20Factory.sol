@@ -53,7 +53,7 @@ contract ProjectERC20Factory {
 
         require(!checkExistence(pid), "Matching pERC20 already exists");
         /// @TODO: Needs some consideration about automatic naming
-        console.log("DEBUG: deploying from template");
+        // console.log("DEBUG: deploying from template");
         deployNewToken("pERC20-P-XYZ-Vin2015", "PV20-ID123-y15", pid, vintage, contractRegistry);
 
      }
@@ -69,11 +69,11 @@ contract ProjectERC20Factory {
     // Checks if same pToken has already been deployed
     function checkExistence(string memory _pTokenIdentifier) internal view returns (bool) {
         if (pContractRegistry[_pTokenIdentifier] == address(0)) {
-            console.log("DEBUG: checkExistence: false");
+            // console.log("DEBUG: checkExistence: false");
             return false;
         }
         else {
-            console.log("DEBUG: checkExistence: true");
+            // console.log("DEBUG: checkExistence: true");
             return true;
         }
     }
@@ -81,7 +81,7 @@ contract ProjectERC20Factory {
     // Lists addresses of deployed contracts
     function getContracts() public view returns (address[] memory) {
         for (uint256 i = 0; i < deployedContracts.length; i++) {
-            console.log("sol: logging contract",i, deployedContracts[i]);
+            // console.log("DEBUG sol: logging contract",i, deployedContracts[i]);
         } 
         return deployedContracts;
     }

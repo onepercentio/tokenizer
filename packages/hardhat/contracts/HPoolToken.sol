@@ -94,8 +94,8 @@ contract HPoolToken is Context, ERC20, Ownable {
         string memory s = ProjectERC20(erc20Addr).standard();
         string memory m = ProjectERC20(erc20Addr).methodology();
 
-        console.log("DEBUG vintage,region,standard:", v,r,s);
-        console.log("DEBUG method:", m);
+        // console.log("DEBUG vintage,region,standard:", v,r,s);
+        // console.log("DEBUG method:", m);
 
         // Corresponding match variables
         bool vMatch = false;
@@ -115,10 +115,10 @@ contract HPoolToken is Context, ERC20, Ownable {
             uint256 mlen = allowedSets[x].methodologies.length;
 
             for (uint i = 0; i < vlen; i++) {
-                console.log("DEBUG vintage:", i, allowedSets[x].vintages[i]);
+                // console.log("DEBUG vintage:", i, allowedSets[x].vintages[i]);
 
                 if (allowedSets[x].vintages[i]==v) {
-                    console.log("DEBUG: match VINTAGES in set:", x);
+                    // console.log("DEBUG: match VINTAGES in set:", x);
                     vMatch = true;
                     break;
                 }
@@ -131,10 +131,10 @@ contract HPoolToken is Context, ERC20, Ownable {
             if (vMatch==false) continue;
 
             for (uint i = 0; i < rlen; i++) {
-                console.log("DEBUG regions:",i, allowedSets[x].regions[i]);
+                // console.log("DEBUG regions:",i, allowedSets[x].regions[i]);
 
                 if (keccak256(abi.encodePacked(allowedSets[x].regions[i]))==keccak256(abi.encodePacked(r))) {
-                    console.log("DEBUG: match in REGIONS in set:", x);
+                    // console.log("DEBUG: match in REGIONS in set:", x);
                     rMatch = true;
                     break;
                 }
@@ -148,10 +148,10 @@ contract HPoolToken is Context, ERC20, Ownable {
 
 
             for (uint i = 0; i < slen; i++) {
-                console.log("DEBUG standards:",i, allowedSets[x].standards[i]);
+                // console.log("DEBUG standards:",i, allowedSets[x].standards[i]);
                 
                 if (keccak256(abi.encodePacked(allowedSets[x].standards[i]))==keccak256(abi.encodePacked(s))) {
-                    console.log("DEBUG: match in STANDARDS in set:", x);
+                    // console.log("DEBUG: match in STANDARDS in set:", x);
                     sMatch = true;
                     break;
                 }
@@ -164,10 +164,10 @@ contract HPoolToken is Context, ERC20, Ownable {
             if (sMatch==false) continue;
 
             for (uint i = 0; i < mlen; i++) {
-                console.log("DEBUG methodologies:",i, allowedSets[x].methodologies[i]);
+                // console.log("DEBUG methodologies:",i, allowedSets[x].methodologies[i]);
                 
                 if (keccak256(abi.encodePacked(allowedSets[x].methodologies[i]))==keccak256(abi.encodePacked(m))) {
-                    console.log("DEBUG: match in METHODOLOGIES in set:", x);
+                    // console.log("DEBUG: match in METHODOLOGIES in set:", x);
                     mMatch = true;
                     break;
                 }
