@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.9.0;
 
-interface ProjectCollection {
+interface IProjectCollection {
     // function vintageCount(string calldata) external view returns (uint256);
 
     function addNewProject(

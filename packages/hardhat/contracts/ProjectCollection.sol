@@ -36,20 +36,22 @@ contract ProjectCollection is ERC721, Ownable {
 
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
 
+    // Note: Not sure if this function is really necessary
     function setContractRegistry(address _address) public onlyOwner {
         contractRegistry = _address;
     }
 
     // Updates the controller, the entity in charge of the ProjectData
-    // Questionable if needed if this stays ERC721, as this could be the NFT owner
+    // Note: Questionable if needed if this stays ERC721, as this could be the NFT owner
     function updateController(uint tokenId, address _controller) public {
         require(msg.sender==ownerOf(tokenId), "Error: Caller is not the owner");
         projects[tokenId].controller = _controller;
     }
 
+   
     function addNewProject(
         address to,
-        string memory _projectIdentifier,
+        string memory _projectId,
         string memory _methodology,
         string memory _standard,
         string memory _region,
@@ -60,13 +62,12 @@ contract ProjectCollection is ERC721, Ownable {
         returns (uint256)
     {
         _tokenIds.increment();
-
         uint256 newItemId = _tokenIds.current();
-        console.log("minting Project NFT to ", to);
-        console.log("newItemId is ", newItemId);
+        // console.log("DEBUG sol: minting Project NFT to ", to);
+        // console.log("DEBUG sol: newItemId is ", newItemId);
         _mint(to, newItemId);
 
-        projects[newItemId].projectId = _projectIdentifier;
+        projects[newItemId].projectId = _projectId;
         projects[newItemId].methodology = _methodology;
         projects[newItemId].standard = _standard;
         projects[newItemId].region = _region;     
@@ -76,6 +77,10 @@ contract ProjectCollection is ERC721, Ownable {
         // _setTokenURI(newItemId, tokenURI);
         emit ProjectMinted(to, _tokenURI);
         return newItemId;
+    }
+
+    function removeProject(uint tokenId) public onlyOwner {
+        delete projects[tokenId];
     }
 
     function getProjectData(uint256 tokenId) public view

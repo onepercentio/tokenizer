@@ -42,26 +42,6 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         contractRegistry = _contractRegistry;
     }
 
-    //     constructor (
-    //     string memory name_, 
-    //     string memory symbol_,
-    //     string memory _projectId,
-    //     uint16 _vintage,
-    //     string memory _region,
-    //     string memory _standard,
-    //     string memory _methodology,
-    //     address _contractRegistry
-    //     ) ERC20(name_, symbol_) {
-    //     projectId = _projectId;
-
-    //     vintage = _vintage;
-    //     region = _region;
-    //     standard = _standard;
-    //     methodology = _methodology;
-        
-    //     contractRegistry = _contractRegistry;
-    // }
-
     
     function getAttributes() public view returns (uint16, string memory, string memory, string memory) {
         console.log("DEBUG: getAttributes", region, standard, methodology);

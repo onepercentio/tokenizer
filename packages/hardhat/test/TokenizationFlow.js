@@ -35,6 +35,30 @@ describe("", () => {
 
 
     // ---------------------
+    // Deploying ProjectCollection
+    console.log("\n----\nDeploying ProjectCollection...");
+    factory = await ethers.getContractFactory("ProjectCollection");
+    ProjectCollection = await factory.deploy();
+
+    // Initialize Example Project-A
+    let projectId = "VER-0001";
+    let methodology = "Removal-01";
+    let standard = "VCS";
+    let region = "USA"; 
+    let metaDataHash = "0xabc";
+    let tokenURI = "";
+
+    await ProjectCollection.connect(project).
+    addNewProject(project.address, projectId,methodology, standard, region, metaDataHash, tokenURI);
+    expect(await ProjectCollection.ownerOf(1)).to.equal(project.address);
+
+    data = await ProjectCollection.getProjectData(1);
+    console.log("Logging getProjectData(1):", data);
+    // expect(await ProjectCollection.getProjectData(1)).to.equal([projectId, methodology, standard, region]);
+    // expect(data).to.equal([projectId, methodology, standard, region]);
+
+
+    // ---------------------
     // Deploying BatchCollection
     console.log("\n----\nDeploying BatchCollection...");
     factory = await ethers.getContractFactory("BatchCollection");
