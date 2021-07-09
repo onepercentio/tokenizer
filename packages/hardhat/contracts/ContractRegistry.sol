@@ -77,7 +77,7 @@ contract ContractRegistry is Ownable, IContractRegistry {
     }
 
     function checkERC20(address _address) external view override returns (bool) {
-        console.log("DEBUG sol: checkERC20", _address);
+        // console.log("DEBUG sol: checkERC20", _address);
         return pERC20Registry[_address];
     }   
 }
