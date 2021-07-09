@@ -98,8 +98,8 @@ describe("", () => {
     
     // retrieve array with all ERC20 contract addresses
     pERC20Array = await ProjectERC20Factory.getContracts();
-    console.log("logging getContracts()", pERC20Array);
-    // expect(await ProjectERC20Factory.getContracts()).length.to.equal(2);
+    console.log("logging getContracts()", pERC20Array, pERC20Array.length);
+    // expect(await ProjectERC20Factory.getContracts().length).to.equal(2);
 
 
     // ---------------------
@@ -133,14 +133,6 @@ describe("", () => {
     expect(await pERC20_1.balanceOf(owner.address)).to.equal(1000);
     expect(await pERC20_2.balanceOf(owner.address)).to.equal(0);
 
-    // await pERC20_1.getAttributes();
-
-    // console.log("region pERC20:", await pERC20_1.vintage());
-    // console.log("region pERC20:", await pERC20_1.region());
-    // console.log("standard pERC20:", await pERC20_1.standard());
-    // console.log("methodology pERC20:", await pERC20_1.methodology());
-
-
     console.log(await ContractRegistry.projectERC20FactoryAddress());
 
     // ---------------------
@@ -153,11 +145,8 @@ describe("", () => {
 
     await HPoolToken.addAttributeSet([2015, 2016], ["USA", "CO", "BR"], ["VCS"], ["XYZbla"]);
 
-    // response = await HPoolToken.checkAttributeMatching(pERC20Array[0]);
-    // console.log(response);
-
-    // response = await HPoolToken.checkAttributeMatching(pERC20Array[1]);
-    // console.log(response);
+    expect(await HPoolToken.checkAttributeMatching(pERC20Array[0])).to.equal(true);
+    expect(await HPoolToken.checkAttributeMatching(pERC20Array[1])).to.equal(false);
 
     // ---------------------
     // Deposit pERC20-1 to Pool (HPoolToken)
@@ -177,8 +166,9 @@ describe("", () => {
     expect(await pERC20_2.allowance(owner.address, HPoolToken.address)).to.equal(500);
 
     // Deposit to HPool - mint to owner SUPPOSED TO REVERT
-    // await HPoolToken.deposit(pERC20_2.address, 1000);
-    // console.log("balance HPoolToken of owner:", await HPoolToken.balanceOf(owner.address));
+    // TEST NOT completed, token not yet minted, requires another batchNFT
+    await expect(HPoolToken.deposit(pERC20_2.address, 9999999)).to.be.reverted;
+    expect(await HPoolToken.balanceOf(owner.address)).to.equal(1000);
 
   });
 
