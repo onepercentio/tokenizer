@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./IContractRegistry.sol";
-import "./ProjectCollection.sol";
 
 contract ProjectCollection is ERC721, Ownable {
     using Counters for Counters.Counter;
@@ -33,6 +32,9 @@ contract ProjectCollection is ERC721, Ownable {
 
     mapping (uint256 => ProjectData) public projects;
 
+    // Mapping all projectIds for uniqueness check
+    mapping (string => bool) public projectIds;
+
 
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
 
@@ -48,7 +50,8 @@ contract ProjectCollection is ERC721, Ownable {
         projects[tokenId].controller = _controller;
     }
 
-   
+    // Adding is currently permissionless
+    // updating will require permission 
     function addNewProject(
         address to,
         string memory _projectId,
@@ -58,9 +61,10 @@ contract ProjectCollection is ERC721, Ownable {
         string memory _metaDataHash,
         string memory _tokenURI
         )
-        public
+        public 
         returns (uint256)
     {
+        require(projectIds[_projectId]==false, "Project already exists");
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         // console.log("DEBUG sol: minting Project NFT to ", to);

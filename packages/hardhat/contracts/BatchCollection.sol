@@ -11,7 +11,7 @@ import "hardhat/console.sol";
 
 import "./IContractRegistry.sol";
 import "./IBatchCollection.sol";
-
+import "./ProjectCollection.sol";
 
 contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection {
     using Counters for Counters.Counter;
@@ -208,9 +208,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         returns (uint256)
     {
         _tokenIds.increment();
-
         uint256 newItemId = _tokenIds.current();
-
         // console.log("minting BRC to ", to);
         // console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
@@ -219,7 +217,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[newItemId].confirmed = false;
         emit BatchMinted(to);
 
-        return newItemId;
+        // Why return statement?
+        return newItemId; 
     }
 
 
@@ -235,6 +234,10 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         public onlyVerifier
         returns (uint256)
     {
+        
+        address c = IContractRegistry(contractRegistry).projectCollectionAddress();
+        require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
+
         nftList[tokenId].projectIdentifier = _projectIdentifier;
         nftList[tokenId].vintage = _vintage;
         nftList[tokenId].serialNumber = _serialNumber;
