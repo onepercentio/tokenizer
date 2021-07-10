@@ -48,14 +48,22 @@ describe("", () => {
     let metaDataHash = "0xabc";
     let tokenURI = "";
 
+    const projTokenId = 1;
+
     await ProjectCollection.connect(project).
     addNewProject(project.address, projectId,methodology, standard, region, metaDataHash, tokenURI);
-    expect(await ProjectCollection.ownerOf(1)).to.equal(project.address);
+    expect(await ProjectCollection.ownerOf(projTokenId)).to.equal(project.address);
 
-    data = await ProjectCollection.getProjectData(1);
-    console.log("Logging getProjectData(1):", data);
-    // expect(await ProjectCollection.getProjectData(1)).to.equal([projectId, methodology, standard, region]);
-    // expect(data).to.equal([projectId, methodology, standard, region]);
+    data = await ProjectCollection.getProjectData(projTokenId);
+    console.log("Logging getProjectData(projTokenId):", data);
+
+    projectDataArr = [projectId, methodology, standard, region];
+    // ERROR: need to be fixed
+    // expect(await ProjectCollection.getProjectData(projTokenId)).to.equal(projectDataArr);
+    expect(data[0]).to.equal(projectDataArr[0]);
+
+    await ContractRegistry.setProjectCollectionAddress(ProjectCollection.address);
+    expect(await ContractRegistry.projectCollectionAddress()).to.equal(ProjectCollection.address);
 
 
     // ---------------------
@@ -120,10 +128,11 @@ describe("", () => {
       ContractRegistry.address
     );
     
+    // console.log("logging getContracts()", pERC20Array, pERC20Array.length);
     // retrieve array with all ERC20 contract addresses
     pERC20Array = await ProjectERC20Factory.getContracts();
-    console.log("logging getContracts()", pERC20Array, pERC20Array.length);
-    // expect(await ProjectERC20Factory.getContracts().length).to.equal(2);
+    expect(pERC20Array.length).to.equal(2);
+    expect((await ProjectERC20Factory.getContracts()).length).to.equal(2);
 
 
     // ---------------------
