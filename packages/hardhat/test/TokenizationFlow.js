@@ -13,8 +13,8 @@ describe("", () => {
     const vintage2 = 2011;
 
 
-    const projectIdentifier = "p001-CO-GS";
-    const projectIdentifier2 = "p002-CO-GS";
+    const projectId = "VER-0001";
+    const projectId2 = "GS-0001";
     const serialNumber = "VCS-VCU-262-VER-BR-14-1686-01012017";
 
 
@@ -41,7 +41,6 @@ describe("", () => {
     ProjectCollection = await factory.deploy();
 
     // Initialize Example Project-A
-    let projectId = "VER-0001";
     let methodology = "Removal-01";
     let standard = "VCS";
     let region = "USA"; 
@@ -51,7 +50,7 @@ describe("", () => {
     const projTokenId = 1;
 
     await ProjectCollection.connect(project).
-    addNewProject(project.address, projectId,methodology, standard, region, metaDataHash, tokenURI);
+    addNewProject(project.address, projectId, methodology, standard, region, metaDataHash, tokenURI);
     expect(await ProjectCollection.ownerOf(projTokenId)).to.equal(project.address);
 
     data = await ProjectCollection.getProjectData(projTokenId);
@@ -86,7 +85,7 @@ describe("", () => {
     console.log("\nConnecting Project Account and mint Batch-NFT...");
     await BatchCollection.connect(project).mintBatchWithData(
       project.address,
-      projectIdentifier,
+      projectId,
       "2016",
       serialNumber,
       1000
@@ -123,7 +122,7 @@ describe("", () => {
     await ProjectERC20Factory.deployNewToken(
       name,
       symbol,
-      projectIdentifier,
+      projectId,
       vintage2,
       ContractRegistry.address
     );

@@ -65,6 +65,7 @@ contract ProjectCollection is ERC721, Ownable {
         returns (uint256)
     {
         require(projectIds[_projectId]==false, "Project already exists");
+        projectIds[_projectId] = true;
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         // console.log("DEBUG sol: minting Project NFT to ", to);

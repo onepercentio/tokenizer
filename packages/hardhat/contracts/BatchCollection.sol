@@ -259,11 +259,13 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
             public
             returns (uint256)
         {
+            address c = IContractRegistry(contractRegistry).projectCollectionAddress();
+            require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
+            
             _tokenIds.increment();
-
             uint256 newItemId = _tokenIds.current();
-            console.log("DEBUG sol: minting to ", to);
-            console.log("DEBUG sol: newItemId is ", newItemId);
+            // console.log("DEBUG sol: minting to ", to);
+            // console.log("DEBUG sol: newItemId is ", newItemId);
             batchIndexToOwner[newItemId] = to;
 
             _safeMint(to, newItemId);
