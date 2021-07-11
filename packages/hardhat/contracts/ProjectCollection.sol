@@ -25,18 +25,21 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     // MetaData could contain attributes like dates, country, region, standard etc.
     struct ProjectData {
         string projectId;
-        string methodology;
         string standard;
+        string methodology;
         string region;
         string metaDataHash;
         string tokenURI;
         address controller; // could be a multisig that can change project data
     }
 
+
     mapping (uint256 => ProjectData) public projects;
 
     // Mapping all projectIds for uniqueness check
     mapping (string => bool) public projectIds;
+
+    mapping (string => uint) public pidToTokenId;
 
 
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
@@ -57,33 +60,34 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     // updating will require permission 
     function addNewProject(
         address to,
-        string memory _projectId,
-        string memory _methodology,
-        string memory _standard,
-        string memory _region,
-        string memory _metaDataHash,
-        string memory _tokenURI
+        string memory projectId,
+        string memory standard,
+        string memory methodology,
+        string memory region,
+        string memory metaDataHash,
+        string memory tokenURI
         )
         public override
         returns (uint256)
     {
-        require(projectIds[_projectId]==false, "Project already exists");
-        projectIds[_projectId] = true;
+        require(projectIds[projectId]==false, "Project already exists");
+        projectIds[projectId] = true;
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         // console.log("DEBUG sol: minting Project NFT to ", to);
         // console.log("DEBUG sol: newItemId is ", newItemId);
         _mint(to, newItemId);
 
-        projects[newItemId].projectId = _projectId;
-        projects[newItemId].methodology = _methodology;
-        projects[newItemId].standard = _standard;
-        projects[newItemId].region = _region;     
-        projects[newItemId].metaDataHash = _metaDataHash;
-        projects[newItemId].tokenURI = _tokenURI;
+        projects[newItemId].projectId = projectId;
+        projects[newItemId].methodology = methodology;
+        projects[newItemId].standard = standard;
+        projects[newItemId].region = region;     
+        projects[newItemId].metaDataHash = metaDataHash;
+        projects[newItemId].tokenURI = tokenURI;
 
         // _setTokenURI(newItemId, tokenURI);
-        emit ProjectMinted(to, _tokenURI);
+        emit ProjectMinted(to, tokenURI);
+        pidToTokenId[projectId] = newItemId;
         return newItemId;
     }
 
@@ -91,13 +95,28 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         delete projects[tokenId];
     }
 
-    function getProjectData(uint256 tokenId) public view override
-        returns (string memory, string memory, string memory, string memory) 
+    // Retrieve all data from ProjectNFT struct
+    function getProjectDataByTokenId(uint256 tokenId) public view
+        returns (string memory, string memory, string memory, string memory, string memory, string memory) 
         {
          return (
             projects[tokenId].projectId,
             projects[tokenId].methodology,
             projects[tokenId].standard,
+            projects[tokenId].region,
+            projects[tokenId].metaDataHash,
+            projects[tokenId].tokenURI
+         );     
+    }
+
+        // Retrieve data from ProjectNFT relevant for pools
+        function getProjectDataByProjectId(string memory projectId) public view
+        returns (string memory, string memory, string memory) 
+        {
+         uint tokenId = pidToTokenId[projectId];   
+         return (
+            projects[tokenId].standard,
+            projects[tokenId].methodology,
             projects[tokenId].region
          );     
     }

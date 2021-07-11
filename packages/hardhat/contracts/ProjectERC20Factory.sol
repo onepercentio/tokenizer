@@ -37,40 +37,44 @@ library uintConversion {
 // Locks in received ERC721 BatchNFTs and can mint corresponding quantity of ERC20s
 // Permissionless, anyone can deploy new ERC20s unless they do not yet exist and pid exists
 contract ProjectERC20Factory {
-
     event TokenCreated(address tokenAddress);
 
     address public contractRegistry;
-
-    address[] private deployedContracts; // Probably obsolete, moved to registry
-    mapping (string => address) public pContractRegistry; // Probably obsolete, moved to registry
+    address[] private deployedContracts;     // Probably obsolete, moved to registry
+    mapping (string => address) public pContractRegistry; 
 
     constructor (address _contractRegistry) {
         contractRegistry = _contractRegistry;
     }
 
+
     // Function to deploy new pERC20s
     // Note: Function could be internal, but that would disallow pre-deploying ERC20s without existing NFTs 
     function deployNewToken(
-        string memory _pvId,
-        string memory _projectIdentifier,
-        uint16 _vintage,
+        string memory pvId,
+        string memory projectId,
+        uint16 vintage,
         address _contractRegistry) 
     public {
-        require(!checkExistence(_pvId), "Matching pERC20 already exists");
+        require(!checkExistence(pvId), "Matching pERC20 already exists");
 
         address c = IContractRegistry(contractRegistry).projectCollectionAddress();
-        require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
+        require(ProjectCollection(c).projectIds(projectId)==true, "Project does not yet exist");
 
+        string memory standard;
+        string memory methodology;
+        string memory region;
+
+        (standard, methodology, region) = ProjectCollection(c).getProjectDataByProjectId(projectId);
         // Todo: Needs some consideration about automatic naming
-        ProjectERC20 t = new ProjectERC20(_pvId, _pvId, _projectIdentifier, _vintage, _contractRegistry);
+        ProjectERC20 t = new ProjectERC20(pvId, pvId, projectId, vintage, standard, methodology, region, _contractRegistry);
 
         // Register deployed ERC20 in ContractRegistry
         IContractRegistry(contractRegistry).addERC20(address(t));
         
         // Move registration to ContractRegistry
         deployedContracts.push(address(t));
-        pContractRegistry[_pvId] = address(t);
+        pContractRegistry[pvId] = address(t);
 
         emit TokenCreated(address(t));
     }
@@ -90,7 +94,7 @@ contract ProjectERC20Factory {
      }
 
 
-    // Helper function to create unique pERC20 identifying string
+    // Helper function to create unique project-vintage identifying string
     function projectVintageId(string memory pid, string memory vintage) 
         internal pure returns (string memory)  {
         return string(abi.encodePacked(pid, vintage));

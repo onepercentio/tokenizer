@@ -45,14 +45,17 @@ describe("", () => {
 
     const projTokenId = 1;
 
+    // ---------------------
+    // Adding (minting) Example Project-A
     await ProjectCollection.connect(project).
-    addNewProject(project.address, projectId, methodology, standard, region, metaDataHash, tokenURI);
+    addNewProject(project.address, projectId, standard, methodology, region, metaDataHash, tokenURI);
     expect(await ProjectCollection.ownerOf(projTokenId)).to.equal(project.address);
 
-    data = await ProjectCollection.getProjectData(projTokenId);
-    console.log("Logging getProjectData(projTokenId):", data);
+    data = await ProjectCollection.getProjectDataByProjectId(projectId);
+    console.log("\n-----------")
+    console.log("Logging getProjectDataByProjectId(projTokenId):", data);
 
-    projectDataArr = [projectId, methodology, standard, region];
+    projectDataArr = [standard, methodology, region];
     // ERROR: need to be fixed
     // expect(await ProjectCollection.getProjectData(projTokenId)).to.equal(projectDataArr);
     expect(data[0]).to.equal(projectDataArr[0]);
@@ -156,7 +159,6 @@ describe("", () => {
 
     // ---------------------
     // Sending BatchNFTs to pERC20 contract
-
     expect(await BatchCollection.balanceOf(project.address)).to.equal(1);
     expect(await BatchCollection.balanceOf(owner.address)).to.equal(0);
     expect(await BatchCollection.balanceOf(pERC20Array[0])).to.equal(0);
@@ -195,7 +197,7 @@ describe("", () => {
     console.log("\HPoolToken address:");
     console.log(HPoolToken.address);
 
-    await HPoolToken.addAttributeSet([2015, 2016], ["USA", "CO", "BR"], ["VCS"], ["XYZbla"]);
+    await HPoolToken.addAttributeSet([2015, 2016], ["USA", "CO", "BR"], ["VCS"], ["Removal-01"]);
 
     expect(await HPoolToken.checkAttributeMatching(pERC20Array[0])).to.equal(true);
     expect(await HPoolToken.checkAttributeMatching(pERC20Array[1])).to.equal(false);

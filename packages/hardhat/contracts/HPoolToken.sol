@@ -90,12 +90,12 @@ contract HPoolToken is Context, ERC20, Ownable {
 
         // Querying the attributes from the incoming pERC20 token
         uint16 v = ProjectERC20(erc20Addr).vintage();
-        string memory r = ProjectERC20(erc20Addr).region();
         string memory s = ProjectERC20(erc20Addr).standard();
         string memory m = ProjectERC20(erc20Addr).methodology();
+        string memory r = ProjectERC20(erc20Addr).region();
 
-        // console.log("DEBUG vintage,region,standard:", v,r,s);
-        // console.log("DEBUG method:", m);
+        // console.log("DEBUG vintage,standard:", v, s);
+        // console.log("DEBUG method, region:", m, r);
 
         // Corresponding match variables
         bool vMatch = false;

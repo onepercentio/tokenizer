@@ -15,8 +15,4 @@ interface IProjectCollection {
         )
         external returns (uint256);
 
-    function getProjectData(uint256 tokenId) external view 
-        returns (string memory, string memory, string memory, string memory);
-
-    // function ownerOf(uint256) external view returns (address);
 }
