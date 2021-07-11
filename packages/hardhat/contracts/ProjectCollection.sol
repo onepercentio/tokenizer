@@ -3,16 +3,16 @@ pragma solidity >=0.6.0 <0.9.0;
 
 import "hardhat/console.sol"; // dev & testing
 
-
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./IContractRegistry.sol";
-
 import "./IProjectCollection.sol";
 
-
+// The ProjectCollection represents offsetting projects as ERC721 tokens
+// This makes it possible to transfer ownership of projects via transfers
+// The Projects added serve as a data source for the BatchNFTs and project-vintage ERC20s 
 contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     using Counters for Counters.Counter;
 
@@ -22,7 +22,7 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     Counters.Counter private _tokenIds;
 
     // WIP: The fields and naming is subject to change
-    // MetaData could contain attributes like dates, country, region, standard etc.
+    // MetaData for attributes like retirement dates, link to the registry
     struct ProjectData {
         string projectId;
         string standard;
@@ -42,7 +42,7 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     mapping (string => uint) public pidToTokenId;
 
 
-    constructor() ERC721("ProjectCollection", "Offset-Projects") {}
+    constructor() ERC721("Co2ken Project Collection", "Co2ken-PNFT") {}
 
     // Note: Not sure if this function is really necessary
     function setContractRegistry(address _address) public onlyOwner {
@@ -56,7 +56,7 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         projects[tokenId].controller = _controller;
     }
 
-    // Adding is currently permissionless
+    // Adding a new project is currently permissionless
     // updating will require permission 
     function addNewProject(
         address to,
@@ -74,7 +74,7 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         projectIds[projectId] = true;
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        
+
         // console.log("DEBUG sol: minting Project NFT to ", to);
         // console.log("DEBUG sol: newItemId is ", newItemId);
         _mint(to, newItemId);

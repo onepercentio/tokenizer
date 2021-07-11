@@ -69,7 +69,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         override 
         returns (bytes4) 
         {
-        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getBatchNFTData(tokenId);
         // console.log("DEBUG sol:", pid, vintage, serialno);
         // console.log("DEBUG sol:", quantity, approved);
 

@@ -84,7 +84,7 @@ contract ProjectERC20Factory {
      function deployFromTemplate(uint256 tokenId) public {
         // console.log("DEBUG: deploying from template");
         address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
-        (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getNftData(tokenId);
+        (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getBatchNFTData(tokenId);
 
         string memory pvId = projectVintageId(pid, uintConversion.uint2str(vintage));
         require(!checkExistence(pvId), "Matching pERC20 already exists");
