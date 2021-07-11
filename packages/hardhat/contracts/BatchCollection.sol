@@ -6,14 +6,20 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "hardhat/console.sol";
 
-contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
+import "./IContractRegistry.sol";
+import "./IBatchCollection.sol";
+
+
+contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
+    using Address for address;
 
-    event BatchMinted(address sender, string serialNumber, uint quantity);
-
+    event BatchMinted(address sender);
+    event BatchUpdated(address sender, string serialNumber, uint quantity);
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
@@ -29,7 +35,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
         string projectIdentifier;
-        string vintage;
+        uint16 vintage;
         string serialNumber;
         uint256 quantity;
         bool confirmed;
@@ -37,7 +43,10 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
     mapping (uint256 => NFTData) public nftList;
 
-    constructor() ERC721("ClaimCollection", "v0.1-Claim") {}
+    constructor(address _contractRegistry) ERC721("ClaimCollection", "v0.1-Claim") {
+        contractRegistry = _contractRegistry;
+    }
+
 
     // The verifier has the authority to confirm NFTs so ERC20's can be minted
     modifier onlyVerifier() {
@@ -57,19 +66,19 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         emit BatchRetirementConfirmed(tokenId);
     }
 
-    function getProjectIdent(uint256 tokenId) public view returns (string memory) {
+    function getProjectIdent(uint256 tokenId) public view override returns (string memory) {
         return nftList[tokenId].projectIdentifier;
     }
 
-    function getQuantity(uint256 tokenId) public view returns (uint) {
+    function getQuantity(uint256 tokenId) public view override returns (uint) {
         return nftList[tokenId].quantity;
     }
 
-    function getConfirmationStatus(uint256 tokenId) public view returns (bool) {
+    function getConfirmationStatus(uint256 tokenId) public view override returns (bool) {
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view returns (string memory, string memory, string memory, uint, bool) {
+   function getNftData(uint256 tokenId) public view override returns (string memory, uint16, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
             nftList[tokenId].vintage,
@@ -80,7 +89,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {       
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {      
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         safeTransferFrom(from, to, tokenId, "");
     }
@@ -89,12 +98,18 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     function ownerBalanceOf(address owner) public view returns (uint256) {
         uint256 balance = balanceOf(owner);
         console.log("Owner balance is ", balance);
-
         return (balance);
     }
 
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override(ERC721, ERC721Enumerable) {
-        super._beforeTokenTransfer(from, to, amount);
+        if (to.isContract()) {
+        // Reverts if NFT is send a non official pERC20 contract
+        require(IContractRegistry(contractRegistry).checkERC20(to), "pERC20 contract is not official");
+        }
+        else {
+            super._beforeTokenTransfer(from, to, amount);
+        }
+
     }
 
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
@@ -131,35 +146,132 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
+    /// @notice Returns a list of all BatchIDs assigned to an address.
+    function tokenIdsOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
+        uint256 tokenCount = balanceOf(_owner);
+
+        if (tokenCount == 0) 
+        {
+            // Return an empty array
+            return new uint256[](0);
+        } 
+        else 
+        {
+            uint256[] memory result = new uint256[](tokenCount);
+            uint256 totalNfts = totalSupply();
+            uint256 resultIndex = 0;
+
+            // We count on the fact that all nfts have IDs starting at 1 and increasing
+            // sequentially up to the totalNfts count.
+            uint256 nftId;
+
+            for (nftId = 1; nftId <= totalNfts; nftId++) {
+                if (batchIndexToOwner[nftId] == _owner) {
+                    result[resultIndex] = nftId;
+                    resultIndex++;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    /// @notice Returns a list of all unconfirmed NFTs waiting for approval
+    function tokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
+    {
+        uint256 totalNfts = totalSupply();
+        uint256 resultIndex = 0;
+        NFTData[] memory result = new NFTData[](totalNfts);
+
+        // We count on the fact that all nfts have IDs starting at 1 and increasing
+        // sequentially up to the totalNfts count.
+        uint256 nftId;
+
+        for (nftId = 1; nftId <= totalNfts; nftId++) 
+        {
+            if (nftList[nftId].confirmed == false) 
+            {
+                result[resultIndex] = nftList[nftId];
+                resultIndex++;
+            }
+        }
+
+        return result;
+    }
+
+
+
     // Entry function to bring offsets on-chain
     // Mints an NFT claiming that 1 to n tons have been retired
-    // On mint confirmation status is set to fale
-    function mintBatchWithData(
-        address to,
-        string memory _projectIdentifier,
-        string memory _vintage,
-        string memory _serialNumber,
-        uint256 quantity)
+    function mintBatch (address to)
         public
         returns (uint256)
     {
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
-        console.log("minting to ", to);
-        console.log("newItemId is ", newItemId);
+
+        // console.log("minting BRC to ", to);
+        // console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
 
         _safeMint(to, newItemId);
-        emit BatchMinted(to, _serialNumber, quantity);
-
-        nftList[newItemId].projectIdentifier = _projectIdentifier;
-        nftList[newItemId].vintage = _vintage;
-        nftList[newItemId].serialNumber = _serialNumber;
-        nftList[newItemId].quantity = quantity;
         nftList[newItemId].confirmed = false;
-        
+        emit BatchMinted(to);
+
         return newItemId;
     }
+
+
+    // Updates BatchNFT after Serialnumber has been verified
+    // Data is inserted by the verifier
+    function updateBatchWithData(
+        address to,
+        uint256 tokenId,
+        string memory _projectIdentifier,
+        uint16 _vintage,
+        string memory _serialNumber,
+        uint256 quantity)
+        public onlyVerifier
+        returns (uint256)
+    {
+        nftList[tokenId].projectIdentifier = _projectIdentifier;
+        nftList[tokenId].vintage = _vintage;
+        nftList[tokenId].serialNumber = _serialNumber;
+        nftList[tokenId].quantity = quantity;
+
+        emit BatchUpdated(to, _serialNumber, quantity);
+        
+        return tokenId;
+    }
+
+
+    // LEGACY: Entry function to bring offsets on-chain
+    function mintBatchWithData(
+            address to,
+            string memory _projectIdentifier,
+            uint16 _vintage,
+            string memory _serialNumber,
+            uint256 quantity)
+            public
+            returns (uint256)
+        {
+            _tokenIds.increment();
+
+            uint256 newItemId = _tokenIds.current();
+            console.log("DEBUG sol: minting to ", to);
+            console.log("DEBUG sol: newItemId is ", newItemId);
+            batchIndexToOwner[newItemId] = to;
+
+            _safeMint(to, newItemId);
+
+            nftList[newItemId].projectIdentifier = _projectIdentifier;
+            nftList[newItemId].vintage = _vintage;
+            nftList[newItemId].serialNumber = _serialNumber;
+            nftList[newItemId].quantity = quantity;
+            nftList[newItemId].confirmed = false;
+            
+            return newItemId;
+        }
 
 }

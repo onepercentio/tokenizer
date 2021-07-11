@@ -11,5 +11,7 @@ interface IContractRegistry {
 
     function projectERC20FactoryAddress() external view returns (address);
 
+    function checkERC20(address _address) external view returns (bool);
 
+    function addERC20(address _address) external;
 }

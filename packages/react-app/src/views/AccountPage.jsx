@@ -16,7 +16,6 @@ export default function AccountPage({
 }) {
   const ownerBalanceOf = useContractReader(readContracts, "BatchCollection", "ownerBalanceOf", [address]);
   const userBatches = useContractReader(readContracts, "BatchCollection", "tokensOfOwner", [address]);
-  console.log("userBatches are:", userBatches);
 
   return (
     <div>
@@ -35,35 +34,44 @@ export default function AccountPage({
           {userBatches && userBatches.length
             ? userBatches.map(batch => (
                 <>
-                  <br/>
-                  <br/>
+                  <br />
+                  <br />
                   <SimpleGrid columns={2} spacing={10}>
                     <Box align="right" fontWeight="bold">
                       Resource Identifier:
                     </Box>
                     <Box align="left">{batch[0]}</Box>
+
                     <Box align="right" fontWeight="bold">
                       Status:
                     </Box>
-                    <Box align="left" color="red">unconfirmed</Box>
-                    
+                    {batch[4] === false ? (
+                      <Box align="left" color="red">
+                        unconfirmed
+                      </Box>
+                    ) : (
+                      <Box align="left" color="green">
+                        confirmed
+                      </Box>
+                    )}
+
                     <Box align="right" fontWeight="bold">
                       Vintage:
                     </Box>
                     <Box align="left">{batch[1]}</Box>
+
                     <Box align="right" fontWeight="bold">
                       Serial Number:
                     </Box>
-                    <Box>{batch[2]}</Box>
+                    <Box align="left">{batch[2]}</Box>
+
                     <Box align="right" fontWeight="bold">
                       Quantity:
                     </Box>
                     <Box align="left">
                       {batch[3] && typeof batch[3] !== "undefined" ? parseInt(batch[3]._hex, 16) : ""}
                     </Box>
-
-                    
-                    <br/>
+                    <br />
                   </SimpleGrid>
                   <Divider />
                 </>

@@ -13,7 +13,7 @@ return (
         {/* title needs to change */}
           <Heading as="h3" size="lg" mb={4}>Tokenize your Carbon Credits</Heading>
           <SubHeading>Join us in creating a carbon neutral Web3 and beyond</SubHeading>
-          <Button>Get Started <ArrowForwardIcon/></Button>
+          <a href="/tokenize"><Button>Get Started<ArrowForwardIcon/></Button></a>
         </Box>
       </Flex>
     </div>

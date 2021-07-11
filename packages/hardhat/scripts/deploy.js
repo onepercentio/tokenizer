@@ -8,31 +8,28 @@ const R = require("ramda");
 const main = async () => {
   console.log("\n\n 📡 Deploying...\n");
 
-  const BatchCollection = await deploy("BatchCollection");
-  console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
-  
+  // Not yet used in the tokenization flow
   const ProjectCollection = await deploy("ProjectCollection");
   console.log(`ProjectCollection.address ---> : ${ProjectCollection.address}`);
 
-  // const ProjectContract = await deploy("ProjectContract");
-  // console.log(`ProjectContract.address ---> : ${ProjectContract.address}`);
-
-  // const ProjectFactory = await deploy("ProjectFactory");
-  // console.log(`ProjectFactory.address ---> : ${ProjectFactory.address}`);
-
   const ContractRegistry = await deploy("ContractRegistry");
-  // await ProjectFactory.setContractRegistry(ContractRegistry.address);
   console.log(`ContractRegistry.address ---> : ${ContractRegistry.address}`);
 
-
+  const BatchCollection = await deploy("BatchCollection", [ContractRegistry.address]);
+  console.log(`BatchCollection.address ---> : ${BatchCollection.address}`);
+  
   const ProjectERC20Factory = await deploy("ProjectERC20Factory", [ContractRegistry.address]);
-  console.log(`ProjectFactory.address ---> : ${ProjectERC20Factory.address}`);
+  console.log(`ProjectERC20Factory.address ---> : ${ProjectERC20Factory.address}`);
 
 
   await ContractRegistry.setBatchCollectionAddress(BatchCollection.address);
-  // await ContractRegistry.setProjectCollectionAddress(ProjectContract.address);
-  // await ContractRegistry.setProjectFactoryAddress(ProjectFactory.address);
+  await ContractRegistry.setProjectCollectionAddress(ProjectCollection.address);
+  await ContractRegistry.setProjectFactoryAddress(ProjectERC20Factory.address);
 
+
+
+
+  /// --- Scaffold-ETH examples ---
   /*
   //If you want to send value to an address from the deployer
   const deployerWallet = ethers.provider.getSigner()
