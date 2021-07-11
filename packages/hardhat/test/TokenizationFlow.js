@@ -197,6 +197,9 @@ describe("", () => {
     console.log("\HPoolToken address:");
     console.log(HPoolToken.address);
 
+    await HPoolToken.addAttributeSet([2055, 2032, 2005, 2006, 2007, 2009], ["USA", "CO", "BR", "FR", "ES"], ["VCS"], ["XYZbla"]);
+    await HPoolToken.addAttributeSet([2001, 2002, 2005, 2006, 2007, 2009, 2015, 2016], ["USA", "CO", "BR"], ["GS1", "GS2", "GS3","GS4", "VCS"], ["XYZbla"]);
+    await HPoolToken.addAttributeSet([2015, 2016], ["USA", "CO", "BR"], ["GS", "GS1", "GS2", "GS3","GS4"], ["Removal-01"]);
     await HPoolToken.addAttributeSet([2015, 2016], ["USA", "CO", "BR"], ["VCS"], ["Removal-01"]);
 
     expect(await HPoolToken.checkAttributeMatching(pERC20Array[0])).to.equal(true);
