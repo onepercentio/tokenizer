@@ -204,10 +204,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     // Entry function to bring offsets on-chain
     // Mints an NFT claiming that 1 to n tons have been retired
-    function mintEmptyBatch (address to)
-        public
-        returns (uint256)
-    {
+    function mintEmptyBatch (address to) public {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         // console.log("minting BRC to ", to);
@@ -229,9 +226,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         string memory _serialNumber,
         uint256 quantity)
         public onlyVerifier
-        returns (uint256)
     {
-        
         address c = IContractRegistry(contractRegistry).projectCollectionAddress();
         require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
 
@@ -241,8 +236,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[tokenId].quantity = quantity;
 
         emit BatchUpdated(tokenId, _serialNumber, quantity);
-        
-        return tokenId;
     }
 
 
@@ -252,9 +245,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
             string memory _projectIdentifier,
             uint16 _vintage,
             string memory _serialNumber,
-            uint256 quantity)
+            uint256 quantity
+            )
             public
-            returns (uint256)
         {
             address c = IContractRegistry(contractRegistry).projectCollectionAddress();
             require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
@@ -272,8 +265,6 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
             nftList[newItemId].serialNumber = _serialNumber;
             nftList[newItemId].quantity = quantity;
             nftList[newItemId].confirmed = false;
-            
-            return newItemId;
         }
 
 }
