@@ -74,6 +74,7 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         projectIds[projectId] = true;
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
+        
         // console.log("DEBUG sol: minting Project NFT to ", to);
         // console.log("DEBUG sol: newItemId is ", newItemId);
         _mint(to, newItemId);
@@ -85,10 +86,30 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         projects[newItemId].metaDataHash = metaDataHash;
         projects[newItemId].tokenURI = tokenURI;
 
-        // _setTokenURI(newItemId, tokenURI);
         emit ProjectMinted(to, tokenURI);
         pidToTokenId[projectId] = newItemId;
         return newItemId;
+    }
+
+    function updateProject(
+        uint tokenId,
+        string memory projectId,
+        string memory standard,
+        string memory methodology,
+        string memory region,
+        string memory metaDataHash,
+        string memory tokenURI
+        )
+        public onlyOwner()
+    {
+        require(projectIds[projectId]==true, "Project does not yet exist, can't update");
+
+        projects[tokenId].projectId = projectId;
+        projects[tokenId].methodology = methodology;
+        projects[tokenId].standard = standard;
+        projects[tokenId].region = region;     
+        projects[tokenId].metaDataHash = metaDataHash;
+        projects[tokenId].tokenURI = tokenURI;
     }
 
     function removeProject(uint tokenId) public onlyOwner {

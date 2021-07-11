@@ -19,7 +19,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
     using Address for address;
 
     event BatchMinted(address sender);
-    event BatchUpdated(address sender, string serialNumber, uint quantity);
+    event BatchUpdated(uint tokenId, string serialNumber, uint quantity);
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
@@ -116,7 +116,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         return super.supportsInterface(interfaceId);
     }
 
-    /// @notice Returns a list of all BatchIDs assigned to an address.
+    /// @dev Returns a list of all BatchIDs assigned to an address.
     function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -146,7 +146,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         }
     }
 
-    /// @notice Returns a list of all BatchIDs assigned to an address.
+    /// @dev Returns a list of all BatchIDs assigned to an address.
     function tokenIdsOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -176,8 +176,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         }
     }
 
-    /// @notice Returns a list of all unconfirmed NFTs waiting for approval
-    function tokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
+    /// @dev Returns a list of all unconfirmed NFTs waiting for approval
+    /// Note: this "Request Queue" could potentially be moved offchain, access via subgraph  
+    function getTokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
     {
         uint256 totalNfts = totalSupply();
         uint256 resultIndex = 0;
@@ -203,7 +204,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     // Entry function to bring offsets on-chain
     // Mints an NFT claiming that 1 to n tons have been retired
-    function mintBatch (address to)
+    function mintEmptyBatch (address to)
         public
         returns (uint256)
     {
@@ -216,16 +217,12 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         _safeMint(to, newItemId);
         nftList[newItemId].confirmed = false;
         emit BatchMinted(to);
-
-        // Why return statement?
-        return newItemId; 
     }
 
 
     // Updates BatchNFT after Serialnumber has been verified
     // Data is inserted by the verifier
     function updateBatchWithData(
-        address to,
         uint256 tokenId,
         string memory _projectIdentifier,
         uint16 _vintage,
@@ -243,7 +240,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[tokenId].serialNumber = _serialNumber;
         nftList[tokenId].quantity = quantity;
 
-        emit BatchUpdated(to, _serialNumber, quantity);
+        emit BatchUpdated(tokenId, _serialNumber, quantity);
         
         return tokenId;
     }

@@ -11,6 +11,7 @@ describe("", () => {
     const vintage2 = 2011;
     const projectId = "VER-0001";
     const projectId2 = "GS-0001";
+    const projectId3 = "GS-0002";
     const serialNumber = "VCS-VCU-262-VER-BR-14-1686-01012017";
 
 
@@ -90,9 +91,8 @@ describe("", () => {
       1000
     );
 
-    const tokenId = 1;
-
     // Test that BatchNFT owner is the project account
+    const tokenId = 1;
     expect(await BatchCollection.ownerOf(tokenId)).to.equal(project.address);
     
     // Test  BatchNFT confirmation flow
@@ -144,8 +144,8 @@ describe("", () => {
 
     // Revert due to non-existing projectId
     await expect(ProjectERC20Factory.deployNewToken(
-      projectId2+vintage2,
-      projectId2,
+      projectId3+vintage2,
+      projectId3,
       vintage2,
       ContractRegistry.address
     )).to.be.reverted;

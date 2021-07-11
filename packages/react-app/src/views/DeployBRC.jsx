@@ -44,7 +44,7 @@ export default function Tokenize({
   }
 
   async function mintNFT() {
-    await tx(writeContracts.BatchCollection.mintBatch(address));
+    await tx(writeContracts.BatchCollection.mintEmptyBatch(address));
     // eslint-disable-next-line no-alert
     alert("You will see a notification when your transcation has been processed. This may take a moment.");
     if (setMintedEvent) onChangeIsMinted();
