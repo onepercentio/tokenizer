@@ -4,15 +4,11 @@ const { expect } = require("chai");
 
 describe("", () => {
   it("-- Overall deployment test flow ---", async function () {
-    // ---------------------
-    // Variables
 
-    const name = "ProjectTreez";
-    const symbol = "CO-GS-16";
+    // ---------------------
+    // Project Variables
     const vintage = 2016;
     const vintage2 = 2011;
-
-
     const projectId = "VER-0001";
     const projectId2 = "GS-0001";
     const serialNumber = "VCS-VCU-262-VER-BR-14-1686-01012017";
@@ -120,17 +116,41 @@ describe("", () => {
 
     console.log("Deploy new ProjectERC20 token via ProjectERC20Factory...");
     await ProjectERC20Factory.deployNewToken(
-      name,
-      symbol,
+      projectId+vintage2,
       projectId,
       vintage2,
       ContractRegistry.address
     );
+
+    // Revert due to uniqueness check
+    await expect(ProjectERC20Factory.deployNewToken(
+      projectId+vintage2,
+      projectId,
+      vintage2,
+      ContractRegistry.address
+    )).to.be.reverted;
+
+    // Revert due to uniqueness check
+    await expect(ProjectERC20Factory.deployNewToken(
+      projectId+vintage,
+      projectId,
+      vintage,
+      ContractRegistry.address
+    )).to.be.reverted;
+
+
+    // Revert due to non-existing projectId
+    await expect(ProjectERC20Factory.deployNewToken(
+      projectId2+vintage2,
+      projectId2,
+      vintage2,
+      ContractRegistry.address
+    )).to.be.reverted;
     
+
     // console.log("logging getContracts()", pERC20Array, pERC20Array.length);
     // retrieve array with all ERC20 contract addresses
     pERC20Array = await ProjectERC20Factory.getContracts();
-    expect(pERC20Array.length).to.equal(2);
     expect((await ProjectERC20Factory.getContracts()).length).to.equal(2);
 
 

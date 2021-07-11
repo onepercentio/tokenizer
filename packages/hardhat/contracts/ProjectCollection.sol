@@ -10,7 +10,10 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./IContractRegistry.sol";
 
-contract ProjectCollection is ERC721, Ownable {
+import "./IProjectCollection.sol";
+
+
+contract ProjectCollection is IProjectCollection, ERC721, Ownable {
     using Counters for Counters.Counter;
 
     event ProjectMinted(address sender, string purpose);
@@ -61,7 +64,7 @@ contract ProjectCollection is ERC721, Ownable {
         string memory _metaDataHash,
         string memory _tokenURI
         )
-        public 
+        public override
         returns (uint256)
     {
         require(projectIds[_projectId]==false, "Project already exists");
@@ -88,7 +91,7 @@ contract ProjectCollection is ERC721, Ownable {
         delete projects[tokenId];
     }
 
-    function getProjectData(uint256 tokenId) public view
+    function getProjectData(uint256 tokenId) public view override
         returns (string memory, string memory, string memory, string memory) 
         {
          return (
