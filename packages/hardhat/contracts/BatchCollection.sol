@@ -18,7 +18,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
     using SafeMath for uint256;
     using Address for address;
 
-    event BatchMinted(address sender);
+    event BatchMinted(address sender, uint tokenId);
     event BatchUpdated(uint tokenId, string serialNumber, uint quantity);
     event BatchRetirementConfirmed(uint256 tokenId);
     
@@ -209,11 +209,12 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         uint256 newItemId = _tokenIds.current();
         // console.log("minting BRC to ", to);
         // console.log("newItemId is ", newItemId);
+        
         batchIndexToOwner[newItemId] = to;
-
         _safeMint(to, newItemId);
         nftList[newItemId].confirmed = false;
-        emit BatchMinted(to);
+
+        emit BatchMinted(to, newItemId);
     }
 
 
