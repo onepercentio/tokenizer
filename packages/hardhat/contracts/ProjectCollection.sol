@@ -33,18 +33,11 @@ contract ProjectCollection is IProjectCollection, ERC721, Ownable {
         address controller; // could be a multisig that can change project data
     }
 
-
     mapping (uint256 => ProjectData) public projects;
 
-<<<<<<< HEAD
     // Mapping all projectIds for uniqueness check
     mapping (string => bool) public projectIds;
-
     mapping (string => uint) public pidToTokenId;
-=======
-    constructor() ERC721("ProjectCollection", "Offset-Projects") {}
->>>>>>> master
-
 
     constructor() ERC721("Co2ken Project Collection", "Co2ken-PNFT") {}
 

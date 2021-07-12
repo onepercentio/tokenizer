@@ -3,7 +3,6 @@ const fs = require("fs");
 const chalk = require("chalk");
 require("hardhat-gas-reporter");
 
-
 require("@nomiclabs/hardhat-waffle");
 require("@tenderly/hardhat-tenderly");
 
@@ -22,9 +21,8 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 //
 // Select the network you want to deploy to here:
-//
-const defaultNetwork = "kovan";
-// const defaultNetwork = "localhost";
+// const defaultNetwork = "kovan";
+const defaultNetwork = "localhost";
 
 function mnemonic() {
   try {
@@ -134,14 +132,14 @@ module.exports = {
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
-    apiKey: "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8"
+    apiKey: "PSW8C433Q667DVEX5BCRMGNAH9FSGFZ7Q8",
   },
-    gasReporter: {
-      enabled: false, 
-      currency: 'USD',
-      gasPrice: 30,
-      coinmarketcap: ""
-    }
+  gasReporter: {
+    enabled: false,
+    currency: "USD",
+    gasPrice: 30,
+    coinmarketcap: "",
+  },
 };
 
 const DEBUG = false;

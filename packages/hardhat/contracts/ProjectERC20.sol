@@ -102,7 +102,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      *  @param tokenId is the tokenId that shall be checked
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
-        // console.log("DEBUG sol: _checkMatchingAttributes called");
+        // console.log("DEBUG sol: checkMatchingAttributes called");
 
         bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectId));

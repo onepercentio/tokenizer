@@ -268,20 +268,18 @@ describe("", () => {
      
     // ---------------------
     // Deposit pERC20-2 to Pool (HPoolToken)
-    await pERC20_2.approve(HPoolToken.address, 500);
-    expect(await pERC20_2.allowance(owner.address, HPoolToken.address)).to.equal(500);
+    // await pERC20_2.approve(HPoolToken.address, 500);
+    // expect(await pERC20_2.allowance(owner.address, HPoolToken.address)).to.equal(500);
 
     // Approve and deposit 200/250
     await pERC20_2.connect(enduser).approve(HPoolToken.address, 500);
     expect(await pERC20_2.allowance(enduser.address, HPoolToken.address)).to.equal(500);
-    await expect(HPoolToken.connect(enduser).deposit(pERC20_2.address, 200))
-    expect(await pERC20_2.balanceOf(HPoolToken.address)).to.equal(200);
+    await HPoolToken.connect(enduser).deposit(pERC20_2.address, 200);
 
     expect(await HPoolToken.balanceOf(enduser.address)).to.equal(200);
+    expect(await pERC20_2.balanceOf(enduser.address)).to.equal(50);
+    expect(await pERC20_2.balanceOf(HPoolToken.address)).to.equal(200);
 
   });
-
-
-
 
 });
