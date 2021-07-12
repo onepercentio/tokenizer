@@ -31,7 +31,7 @@ import {
   useExchangePrice,
   useGasPrice,
   useUserProvider,
-  
+  useContractLoader,
   useContractReader,
   useBalance,
   useEventListener,
