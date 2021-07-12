@@ -21,6 +21,10 @@ const main = async () => {
   const ProjectERC20Factory = await deploy("ProjectERC20Factory", [ContractRegistry.address]);
   console.log(`ProjectERC20Factory.address ---> : ${ProjectERC20Factory.address}`);
 
+  // Deploying a test pool
+  const HPoolToken = await deploy("HPoolToken", ["TestPool", "TPOOL", ContractRegistry.address]);
+  console.log(`HPoolToken.address ---> : ${HPoolToken.address}`);
+
 
   await ContractRegistry.setBatchCollectionAddress(BatchCollection.address);
   await ContractRegistry.setProjectCollectionAddress(ProjectCollection.address);
