@@ -10,8 +10,10 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "hardhat/console.sol";
 
 import "./IContractRegistry.sol";
+import "./IBatchCollection.sol";
 
-contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
+
+contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
     using Address for address;
@@ -33,7 +35,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
         string projectIdentifier;
-        string vintage;
+        uint16 vintage;
         string serialNumber;
         uint256 quantity;
         bool confirmed;
@@ -64,19 +66,19 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
         emit BatchRetirementConfirmed(tokenId);
     }
 
-    function getProjectIdent(uint256 tokenId) public view returns (string memory) {
+    function getProjectIdent(uint256 tokenId) public view override returns (string memory) {
         return nftList[tokenId].projectIdentifier;
     }
 
-    function getQuantity(uint256 tokenId) public view returns (uint) {
+    function getQuantity(uint256 tokenId) public view override returns (uint) {
         return nftList[tokenId].quantity;
     }
 
-    function getConfirmationStatus(uint256 tokenId) public view returns (bool) {
+    function getConfirmationStatus(uint256 tokenId) public view override returns (bool) {
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view returns (string memory, string memory, string memory, uint, bool) {
+   function getNftData(uint256 tokenId) public view override returns (string memory, uint16, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
             nftList[tokenId].vintage,
@@ -87,7 +89,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     // here for debugging/mock purposes. safeTransferFrom(...) is error prone with ethers.js
-    function transferFrom(address from, address to, uint256 tokenId) public virtual override {       
+    function transferFrom(address from, address to, uint256 tokenId) public virtual override {      
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
         safeTransferFrom(from, to, tokenId, "");
     }
@@ -209,8 +211,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
 
         uint256 newItemId = _tokenIds.current();
 
-        console.log("minting BRC to ", to);
-        console.log("newItemId is ", newItemId);
+        // console.log("minting BRC to ", to);
+        // console.log("newItemId is ", newItemId);
         batchIndexToOwner[newItemId] = to;
 
         _safeMint(to, newItemId);
@@ -221,12 +223,13 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
 
-    // Updates NFT claiming that 1 to n tons have been retired
+    // Updates BatchNFT after Serialnumber has been verified
+    // Data is inserted by the verifier
     function updateBatchWithData(
         address to,
         uint256 tokenId,
         string memory _projectIdentifier,
-        string memory _vintage,
+        uint16 _vintage,
         string memory _serialNumber,
         uint256 quantity)
         public onlyVerifier
@@ -247,7 +250,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
     function mintBatchWithData(
             address to,
             string memory _projectIdentifier,
-            string memory _vintage,
+            uint16 _vintage,
             string memory _serialNumber,
             uint256 quantity)
             public
@@ -256,8 +259,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable {
             _tokenIds.increment();
 
             uint256 newItemId = _tokenIds.current();
-            console.log("minting to ", to);
-            console.log("newItemId is ", newItemId);
+            console.log("DEBUG sol: minting to ", to);
+            console.log("DEBUG sol: newItemId is ", newItemId);
             batchIndexToOwner[newItemId] = to;
 
             _safeMint(to, newItemId);
