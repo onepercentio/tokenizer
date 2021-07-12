@@ -26,7 +26,6 @@ contract ProjectCollection is ERC721, Ownable {
 
     mapping (uint256 => ProjectData) public projects;
 
-
     constructor() ERC721("ProjectCollection", "Offset-Projects") {}
 
     function setContractRegistry(address _address) public onlyOwner {

@@ -1,3 +1,15 @@
+type Batch @entity {
+  id: ID!
+  minter: Sender!
+  owner: Bytes!
+  projectId: BigInt
+  status: String!
+  serialNumber: String
+  quantity: BigInt
+  createdAt: BigInt
+  transactionHash: String
+}
+
 type Purpose @entity {
   id: ID!
   sender: Sender!
@@ -9,7 +21,7 @@ type Purpose @entity {
 type Sender @entity {
   id: ID!
   address: Bytes!
-  purposes: [Purpose!] @derivedFrom(field: "sender")
+  batches: [Batch!] @derivedFrom(field: "minter")
   createdAt: BigInt!
-  purposeCount: BigInt!
+  batchCount: BigInt!
 }
