@@ -11,28 +11,25 @@ import "hardhat/console.sol";
 
 import "./IContractRegistry.sol";
 import "./IBatchCollection.sol";
-
+import "./ProjectCollection.sol";
 
 contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection {
     using Counters for Counters.Counter;
     using SafeMath for uint256;
     using Address for address;
 
-    event BatchMinted(address sender);
-    event BatchUpdated(address sender, string serialNumber, uint quantity);
+    event BatchMinted(address sender, uint tokenId);
+    event BatchUpdated(uint tokenId, string serialNumber, uint quantity);
     event BatchRetirementConfirmed(uint256 tokenId);
     
     address private _verifier;
 
     /// @dev A mapping from batchs IDs to the address that owns them. All batches have
-    ///  some valid owner address from the point of minting, then transfer
     mapping (uint256 => address) public batchIndexToOwner;
 
     address public contractRegistry;
     Counters.Counter private _tokenIds;
 
-    // WIP: The fields and naming is subject to change
-    // required: projectIdentifier+vintage+serialNumber = unique
     struct NFTData {
         string projectIdentifier;
         uint16 vintage;
@@ -43,12 +40,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     mapping (uint256 => NFTData) public nftList;
 
-    constructor(address _contractRegistry) ERC721("ClaimCollection", "v0.1-Claim") {
+    constructor(address _contractRegistry) ERC721("Co2ken Project Batch Collection", "Co2ken-BNFT") {
         contractRegistry = _contractRegistry;
     }
 
-
-    // The verifier has the authority to confirm NFTs so ERC20's can be minted
+    /// @notice The verifier has the authority to confirm NFTs so ERC20's can be minted
     modifier onlyVerifier() {
         require(_verifier == _msgSender(), "BatchCollection: caller is not the owner");
         _;
@@ -59,12 +55,83 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         _verifier = verifier;
     }
 
-    // Appointed verifier confirms that claim about retirement is valid 
+    // confirms that claim about retirement is valid 
     function confirmRetirement (uint256 tokenId) public onlyVerifier {
         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
         nftList[tokenId].confirmed = true;
         emit BatchRetirementConfirmed(tokenId);
     }
+
+
+    // Permissionlessly mint empty BatchNFTs
+    // To be updated by verifier/owner after SerialNumber has been provided
+    function mintEmptyBatch (address to) public {
+        _tokenIds.increment();
+        uint256 newItemId = _tokenIds.current();
+        // console.log("minting BRC to ", to);
+        // console.log("newItemId is ", newItemId);
+
+        batchIndexToOwner[newItemId] = to;
+        _safeMint(to, newItemId);
+        nftList[newItemId].confirmed = false;
+
+        emit BatchMinted(to, newItemId);
+    }
+
+
+    // Updates BatchNFT after Serialnumber has been verified
+    // Data is inserted by the verifier
+    function updateBatchWithData
+        (
+        uint256 tokenId,
+        string memory _projectIdentifier,
+        uint16 _vintage,
+        string memory _serialNumber,
+        uint256 quantity
+        )
+        public onlyVerifier
+    {
+        address c = IContractRegistry(contractRegistry).projectCollectionAddress();
+        require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
+
+        nftList[tokenId].projectIdentifier = _projectIdentifier;
+        nftList[tokenId].vintage = _vintage;
+        nftList[tokenId].serialNumber = _serialNumber;
+        nftList[tokenId].quantity = quantity;
+
+        emit BatchUpdated(tokenId, _serialNumber, quantity);
+    }
+
+
+    // Alternative flow for minting BatchNFTs
+    // Can serve as a entry function if serialNumber is already known
+    function mintBatchWithData(
+            address to,
+            string memory _projectIdentifier,
+            uint16 _vintage,
+            string memory _serialNumber,
+            uint256 quantity
+            )
+            public
+        {
+            address c = IContractRegistry(contractRegistry).projectCollectionAddress();
+            require(ProjectCollection(c).projectIds(_projectIdentifier)==true, "Project does not yet exist");
+            
+            _tokenIds.increment();
+            uint256 newItemId = _tokenIds.current();
+            // console.log("DEBUG sol: minting to ", to);
+            // console.log("DEBUG sol: newItemId is ", newItemId);
+            batchIndexToOwner[newItemId] = to;
+
+            _safeMint(to, newItemId);
+
+            nftList[newItemId].projectIdentifier = _projectIdentifier;
+            nftList[newItemId].vintage = _vintage;
+            nftList[newItemId].serialNumber = _serialNumber;
+            nftList[newItemId].quantity = quantity;
+            nftList[newItemId].confirmed = false;
+        }
+
 
     function getProjectIdent(uint256 tokenId) public view override returns (string memory) {
         return nftList[tokenId].projectIdentifier;
@@ -78,7 +145,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         return nftList[tokenId].confirmed;
     }
 
-   function getNftData(uint256 tokenId) public view override returns (string memory, uint16, string memory, uint, bool) {
+   function getBatchNFTData(uint256 tokenId) public view override returns (string memory, uint16, string memory, uint, bool) {
         return (
             nftList[tokenId].projectIdentifier,
             nftList[tokenId].vintage,
@@ -116,7 +183,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         return super.supportsInterface(interfaceId);
     }
 
-    /// @notice Returns a list of all BatchIDs assigned to an address.
+    /// @dev Returns a list of all BatchIDs assigned to an address.
     function tokensOfOwner(address _owner) external view returns(NFTData[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -146,7 +213,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         }
     }
 
-    /// @notice Returns a list of all BatchIDs assigned to an address.
+    /// @dev Returns a list of all BatchIDs assigned to an address.
     function tokenIdsOfOwner(address _owner) external view returns(uint256[] memory ownerTokens) {
         uint256 tokenCount = balanceOf(_owner);
 
@@ -176,8 +243,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         }
     }
 
-    /// @notice Returns a list of all unconfirmed NFTs waiting for approval
-    function tokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
+    /// @dev Returns a list of all unconfirmed NFTs waiting for approval
+    /// Note: this "Request Queue" could potentially be moved offchain, access via subgraph  
+    function getTokenizationRequests() external view returns(NFTData[] memory ownerTokens) 
     {
         uint256 totalNfts = totalSupply();
         uint256 resultIndex = 0;
@@ -201,77 +269,5 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
 
 
-    // Entry function to bring offsets on-chain
-    // Mints an NFT claiming that 1 to n tons have been retired
-    function mintBatch (address to)
-        public
-        returns (uint256)
-    {
-        _tokenIds.increment();
-
-        uint256 newItemId = _tokenIds.current();
-
-        // console.log("minting BRC to ", to);
-        // console.log("newItemId is ", newItemId);
-        batchIndexToOwner[newItemId] = to;
-
-        _safeMint(to, newItemId);
-        nftList[newItemId].confirmed = false;
-        emit BatchMinted(to);
-
-        return newItemId;
-    }
-
-
-    // Updates BatchNFT after Serialnumber has been verified
-    // Data is inserted by the verifier
-    function updateBatchWithData(
-        address to,
-        uint256 tokenId,
-        string memory _projectIdentifier,
-        uint16 _vintage,
-        string memory _serialNumber,
-        uint256 quantity)
-        public onlyVerifier
-        returns (uint256)
-    {
-        nftList[tokenId].projectIdentifier = _projectIdentifier;
-        nftList[tokenId].vintage = _vintage;
-        nftList[tokenId].serialNumber = _serialNumber;
-        nftList[tokenId].quantity = quantity;
-
-        emit BatchUpdated(to, _serialNumber, quantity);
-        
-        return tokenId;
-    }
-
-
-    // LEGACY: Entry function to bring offsets on-chain
-    function mintBatchWithData(
-            address to,
-            string memory _projectIdentifier,
-            uint16 _vintage,
-            string memory _serialNumber,
-            uint256 quantity)
-            public
-            returns (uint256)
-        {
-            _tokenIds.increment();
-
-            uint256 newItemId = _tokenIds.current();
-            console.log("DEBUG sol: minting to ", to);
-            console.log("DEBUG sol: newItemId is ", newItemId);
-            batchIndexToOwner[newItemId] = to;
-
-            _safeMint(to, newItemId);
-
-            nftList[newItemId].projectIdentifier = _projectIdentifier;
-            nftList[newItemId].vintage = _vintage;
-            nftList[newItemId].serialNumber = _serialNumber;
-            nftList[newItemId].quantity = quantity;
-            nftList[newItemId].confirmed = false;
-            
-            return newItemId;
-        }
 
 }

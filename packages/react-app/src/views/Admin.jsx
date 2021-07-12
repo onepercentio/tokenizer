@@ -14,7 +14,7 @@ export default function Admin({
   readContracts,
   writeContracts,
 }) {
-  const unapprovedTokens = useContractReader(readContracts, "BatchCollection", "tokenizationRequests");
+  const unapprovedTokens = useContractReader(readContracts, "BatchCollection", "getTokenizationRequests");
 
   return (
     <div>

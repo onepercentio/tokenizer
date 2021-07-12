@@ -21,12 +21,11 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     uint256 private _totalSupply = 0;
 
     string public projectId;
-
     // Attributes relevant for harmonizer pools
     uint16 public vintage;
-    string public region = "BR";
-    string public standard = "VCS";
-    string public methodology = "XYZbla";
+    string public standard;
+    string public methodology;
+    string public region;
 
     address public contractRegistry;
 
@@ -35,34 +34,21 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         string memory symbol_,
         string memory _projectId,
         uint16 _vintage,
+        string memory _standard,
+        string memory _methodology,
+        string memory _region,
         address _contractRegistry
-        ) ERC20(name_, symbol_) {
+        ) ERC20(name_, symbol_) 
+        {
         projectId = _projectId;
         vintage = _vintage;
+        standard = _standard;
+        methodology = _methodology;
+        region = _region;
         contractRegistry = _contractRegistry;
     }
 
-    //     constructor (
-    //     string memory name_, 
-    //     string memory symbol_,
-    //     string memory _projectId,
-    //     uint16 _vintage,
-    //     string memory _region,
-    //     string memory _standard,
-    //     string memory _methodology,
-    //     address _contractRegistry
-    //     ) ERC20(name_, symbol_) {
-    //     projectId = _projectId;
-
-    //     vintage = _vintage;
-    //     region = _region;
-    //     standard = _standard;
-    //     methodology = _methodology;
-        
-    //     contractRegistry = _contractRegistry;
-    // }
-
-    
+    // CURRENTLY NOT USED
     function getAttributes() public view returns (uint16, string memory, string memory, string memory) {
         console.log("DEBUG: getAttributes", region, standard, methodology);
         return (
@@ -83,7 +69,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         override 
         returns (bytes4) 
         {
-        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getBatchNFTData(tokenId);
         // console.log("DEBUG sol:", pid, vintage, serialno);
         // console.log("DEBUG sol:", quantity, approved);
 
@@ -116,7 +102,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      *  @param tokenId is the tokenId that shall be checked
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
-        console.log("DEBUG sol: _checkMatchingAttributes called");
+        // console.log("DEBUG sol: _checkMatchingAttributes called");
 
         bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectId));

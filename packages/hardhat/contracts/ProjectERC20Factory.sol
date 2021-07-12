@@ -7,62 +7,97 @@ import "./ProjectERC20.sol";
 
 import "./IContractRegistry.sol";
 import "./IBatchCollection.sol";
+import "./ProjectCollection.sol";
 
+library uintConversion {
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len;
+        while (_i != 0) {
+            k = k-1;
+            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+}
+
+// Project-Vintage ERC20 Factory contract for BatchNFT fractionalization
+// Locks in received ERC721 BatchNFTs and can mint corresponding quantity of ERC20s
+// Permissionless, anyone can deploy new ERC20s unless they do not yet exist and pid exists
 contract ProjectERC20Factory {
-
     event TokenCreated(address tokenAddress);
 
     address public contractRegistry;
-
-    address[] private deployedContracts; // Probably obsolete, moved to registry
-    mapping (string => address) public pContractRegistry; // Probably obsolete, moved to registry
+    address[] private deployedContracts;     // Probably obsolete, moved to registry
+    mapping (string => address) public pContractRegistry; 
 
     constructor (address _contractRegistry) {
         contractRegistry = _contractRegistry;
     }
 
 
+    // Function to deploy new pERC20s
+    // Note: Function could be internal, but that would disallow pre-deploying ERC20s without existing NFTs 
     function deployNewToken(
-        string memory _name, 
-        string memory _symbol,
-        string memory _projectIdentifier,
-        uint16 _vintage,
+        string memory pvId,
+        string memory projectId,
+        uint16 vintage,
         address _contractRegistry) 
     public {
-        // string memory _pTokenIdentifier = append(_name, _symbol, _projectIdentifier);
-        // // Necessary to avoid two of the same project-tokens being deployed with differing symbol/name
-        // require(!checkExistence(_pTokenIdentifier), "Matching pERC20 already exists");
+        require(!checkExistence(pvId), "pERC20 already exists");
 
-        ProjectERC20 t = new ProjectERC20(_name, _symbol, _projectIdentifier, _vintage, _contractRegistry);
+        address c = IContractRegistry(contractRegistry).projectCollectionAddress();
+        require(ProjectCollection(c).projectIds(projectId)==true, "Project does not yet exist");
+
+        string memory standard;
+        string memory methodology;
+        string memory region;
+
+        (standard, methodology, region) = ProjectCollection(c).getProjectDataByProjectId(projectId);
+        // Todo: Needs some consideration about automatic naming
+        ProjectERC20 t = new ProjectERC20(pvId, pvId, projectId, vintage, standard, methodology, region, _contractRegistry);
 
         // Register deployed ERC20 in ContractRegistry
         IContractRegistry(contractRegistry).addERC20(address(t));
         
         // Move registration to ContractRegistry
         deployedContracts.push(address(t));
-        pContractRegistry[_projectIdentifier] = address(t);
+        pContractRegistry[pvId] = address(t);
 
         emit TokenCreated(address(t));
     }
 
 
-     // Deploy providing an NFT as template, currently would work only with one single collection
+     // Deploy providing a BatchNFT as template, currently would work only with one single collection
      function deployFromTemplate(uint256 tokenId) public {
-        address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
-        (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getNftData(tokenId);
-
-        require(!checkExistence(pid), "Matching pERC20 already exists");
-        /// @TODO: Needs some consideration about automatic naming
         // console.log("DEBUG: deploying from template");
-        deployNewToken("pERC20-P-XYZ-Vin2015", "PV20-ID123-y15", pid, vintage, contractRegistry);
+        address collection = IContractRegistry(contractRegistry).batchCollectionAddress();
+        (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getBatchNFTData(tokenId);
+
+        string memory pvId = projectVintageId(pid, uintConversion.uint2str(vintage));
+        require(!checkExistence(pvId), "pERC20 already exists");
+
+        deployNewToken(pvId, pid, vintage, contractRegistry);
 
      }
 
 
-    // Helper function to create unique pERC20 identifying string
-    function append(string memory a, string memory b, string memory c, string memory d) 
+    // Helper function to create unique project-vintage identifying string
+    function projectVintageId(string memory pid, string memory vintage) 
         internal pure returns (string memory)  {
-        return string(abi.encodePacked(a, b, c, d));
+        return string(abi.encodePacked(pid, vintage));
     }
 
 
@@ -86,3 +121,5 @@ contract ProjectERC20Factory {
         return deployedContracts;
     }
 }
+
+

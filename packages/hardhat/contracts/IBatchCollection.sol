@@ -9,5 +9,5 @@ interface IBatchCollection {
 
     function getConfirmationStatus(uint256 tokenId) external view returns (bool);
 
-    function getNftData(uint256 tokenId) external view returns (string memory, uint16, string memory, uint, bool);
+    function getBatchNFTData(uint256 tokenId) external view returns (string memory, uint16, string memory, uint, bool);
 }
