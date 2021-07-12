@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol"; // dev & testing
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
@@ -21,27 +20,57 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
     // Initial supply = 0
     uint256 private _totalSupply = 0;
 
-    uint8 private _decimals = 0;
+    string public projectId;
 
-    string private _name;
-    string private _symbol;
-    string public vintage;
-    string public projectIdentifier;
+    // Attributes relevant for harmonizer pools
+    uint16 public vintage;
+    string public region = "BR";
+    string public standard = "VCS";
+    string public methodology = "XYZbla";
+
     address public contractRegistry;
-
 
     constructor (
         string memory name_, 
         string memory symbol_,
-        string memory _projectIdentifier,
-        string memory _vintage,
+        string memory _projectId,
+        uint16 _vintage,
         address _contractRegistry
         ) ERC20(name_, symbol_) {
-        _name = name_;
-        _symbol = symbol_;
-        projectIdentifier = _projectIdentifier;
+        projectId = _projectId;
         vintage = _vintage;
         contractRegistry = _contractRegistry;
+    }
+
+    //     constructor (
+    //     string memory name_, 
+    //     string memory symbol_,
+    //     string memory _projectId,
+    //     uint16 _vintage,
+    //     string memory _region,
+    //     string memory _standard,
+    //     string memory _methodology,
+    //     address _contractRegistry
+    //     ) ERC20(name_, symbol_) {
+    //     projectId = _projectId;
+
+    //     vintage = _vintage;
+    //     region = _region;
+    //     standard = _standard;
+    //     methodology = _methodology;
+        
+    //     contractRegistry = _contractRegistry;
+    // }
+
+    
+    function getAttributes() public view returns (uint16, string memory, string memory, string memory) {
+        console.log("DEBUG: getAttributes", region, standard, methodology);
+        return (
+            vintage,
+            region,
+            standard,
+            methodology
+        );
     }
 
     /**
@@ -54,9 +83,9 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         override 
         returns (bytes4) 
         {
-        (string memory pid, string memory vintage, string memory serialno, uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
-        console.log("DEBUG sol:", pid, vintage, serialno);
-        console.log("DEBUG sol:", quantity, approved);
+        (, , , uint quantity, bool approved) = IBatchCollection(msg.sender).getNftData(tokenId);
+        // console.log("DEBUG sol:", pid, vintage, serialno);
+        // console.log("DEBUG sol:", quantity, approved);
 
 
         // msg.sender is the BatchCollection contract
@@ -90,7 +119,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         console.log("DEBUG sol: _checkMatchingAttributes called");
 
         bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
-        bytes32 pid20 = keccak256(abi.encodePacked(projectIdentifier));
+        bytes32 pid20 = keccak256(abi.encodePacked(projectId));
 
         if (pid20 == pid721) { 
             return true;
@@ -98,9 +127,5 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         else {
             return false;
         }
-    }
-
-    function decimals() public view virtual override returns (uint8) {
-        return _decimals;
     }
 }
