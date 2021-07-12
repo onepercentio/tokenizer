@@ -48,7 +48,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
         contractRegistry = _contractRegistry;
     }
 
-    
+    // CURRENTLY NOT USED
     function getAttributes() public view returns (uint16, string memory, string memory, string memory) {
         console.log("DEBUG: getAttributes", region, standard, methodology);
         return (
@@ -102,7 +102,7 @@ contract ProjectERC20 is Context, ERC20, IERC721Receiver {
      *  @param tokenId is the tokenId that shall be checked
      **/
     function checkMatchingAttributes(address collection, uint256 tokenId) internal view returns (bool) {
-        console.log("DEBUG sol: _checkMatchingAttributes called");
+        // console.log("DEBUG sol: _checkMatchingAttributes called");
 
         bytes32 pid721 = keccak256(abi.encodePacked(IBatchCollection(collection).getProjectIdent(tokenId)));
         bytes32 pid20 = keccak256(abi.encodePacked(projectId));

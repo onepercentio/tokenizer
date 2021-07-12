@@ -81,12 +81,14 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     // Updates BatchNFT after Serialnumber has been verified
     // Data is inserted by the verifier
-    function updateBatchWithData(
+    function updateBatchWithData
+        (
         uint256 tokenId,
         string memory _projectIdentifier,
         uint16 _vintage,
         string memory _serialNumber,
-        uint256 quantity)
+        uint256 quantity
+        )
         public onlyVerifier
     {
         address c = IContractRegistry(contractRegistry).projectCollectionAddress();

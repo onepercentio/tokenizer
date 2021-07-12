@@ -56,7 +56,7 @@ contract ProjectERC20Factory {
         uint16 vintage,
         address _contractRegistry) 
     public {
-        require(!checkExistence(pvId), "Matching pERC20 already exists");
+        require(!checkExistence(pvId), "pERC20 already exists");
 
         address c = IContractRegistry(contractRegistry).projectCollectionAddress();
         require(ProjectCollection(c).projectIds(projectId)==true, "Project does not yet exist");
@@ -87,7 +87,7 @@ contract ProjectERC20Factory {
         (string memory pid, uint16 vintage, , , ) = IBatchCollection(collection).getBatchNFTData(tokenId);
 
         string memory pvId = projectVintageId(pid, uintConversion.uint2str(vintage));
-        require(!checkExistence(pvId), "Matching pERC20 already exists");
+        require(!checkExistence(pvId), "pERC20 already exists");
 
         deployNewToken(pvId, pid, vintage, contractRegistry);
 

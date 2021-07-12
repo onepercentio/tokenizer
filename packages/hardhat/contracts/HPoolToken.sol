@@ -63,17 +63,17 @@ contract HPoolToken is Context, ERC20, Ownable {
 
 
     function deposit(address erc20Addr, uint amount) public {
+        console.log("DEBUG sol: deposit(erc20Addr, amount):", erc20Addr, amount);
         // Verifiy that pERC20 is official token
         require(IContractRegistry(contractRegistry).checkERC20(erc20Addr)==true, "pERC20 not official");
-        
         require(checkAttributeMatching(erc20Addr)==true, "The token sent is not accepted");
-        console.log("DEBUG deposit");
 
         // transfers token from sender (current owner) to this contract
         IERC20(erc20Addr).transferFrom(msg.sender, address(this), amount);
 
         // mints pool/index token to prev. owner(sender)
         _mint(msg.sender, amount);
+
     }
 
     // Redeem for underlying
@@ -86,7 +86,7 @@ contract HPoolToken is Context, ERC20, Ownable {
     // Checks whether incoming pERC20 token matches the accepted criteria/attributes 
     function checkAttributeMatching(address erc20Addr) public view returns (bool) {
 
-        console.log("DEBUG checkAttributeMatching:", erc20Addr);
+        // console.log("DEBUG checkAttributeMatching:", erc20Addr);
 
         // Querying the attributes from the incoming pERC20 token
         uint16 v = ProjectERC20(erc20Addr).vintage();
