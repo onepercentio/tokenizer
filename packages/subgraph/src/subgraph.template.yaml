@@ -3,23 +3,23 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
-    network: localhost
+    name: BatchCollection
+    network: kovan
     source:
-      address: '{{YourContractAddress}}'
-      abi: YourContract
+      address: "{{BatchCollectionAddress}}"
+      abi: BatchCollection
       startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - Purpose
+        - Batch
         - Sender
       abis:
-        - name: YourContract
-          file: ./abis/YourContract.json
+        - name: BatchCollection
+          file: ./abis/BatchCollection.json
       eventHandlers:
-        - event: SetPurpose(address,string)
-          handler: handleSetPurpose
+        - event: BatchMinted(address)
+          handler: handleMintBatch
       file: ./src/mapping.ts
