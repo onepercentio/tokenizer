@@ -10,14 +10,6 @@ type Batch @entity {
   transactionHash: String
 }
 
-type Purpose @entity {
-  id: ID!
-  sender: Sender!
-  purpose: String!
-  createdAt: BigInt!
-  transactionHash: String!
-}
-
 type Sender @entity {
   id: ID!
   address: Bytes!

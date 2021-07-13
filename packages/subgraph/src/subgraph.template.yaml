@@ -20,6 +20,6 @@ dataSources:
         - name: BatchCollection
           file: ./abis/BatchCollection.json
       eventHandlers:
-        - event: BatchMinted(address)
+        - event: BatchMinted(address,uint256)
           handler: handleMintBatch
       file: ./src/mapping.ts

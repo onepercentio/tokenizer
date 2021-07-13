@@ -2,7 +2,7 @@ import { BigInt, Address } from "@graphprotocol/graph-ts"
 import {
   BatchMinted
 } from "../generated/BatchCollection/BatchCollection"
-import { Batch, Purpose, Sender } from "../generated/schema"
+import { Batch, Sender } from "../generated/schema"
 
 export function handleMintBatch(event: BatchMinted): void {
   
