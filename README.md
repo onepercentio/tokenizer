@@ -16,7 +16,7 @@ The project NFTs that contain meta data about offsetting projects are not depict
 - Frontend: react
 - Hardhat/ethers/solidity
 
-# 🏃‍♀️ Quick Start
+# 🏃‍♀️ Local deployment
 
 required: [Node](https://nodejs.org/dist/latest-v12.x/) plus [Yarn](https://classic.yarnpkg.com/en/docs/install/) and [Git](https://git-scm.com/downloads)
 
@@ -24,7 +24,6 @@ For local deployment and test you need three terminal windows:
 
 > 1st window:
 ```bash
-cd tokenizer
 yarn install
 yarn chain
 ```
@@ -32,18 +31,29 @@ yarn chain
 > in a second terminal window:
 
 ```bash
-cd tokenizer
 yarn start
 ```
-
 > in a third terminal window:
 
 ```bash
-cd tokenizer
 yarn deploy
 ```
 
-
 📱 Open http://localhost:3000 to see the app
 
+# Deployment on Kovan
+Generate new secret phrase (mnemonic)
+`yarn run generate`
+
+Display the current account (you can check if you have some ETH or testnet ETH inside it)
+`yarn run account`
+
+Deploy the contracts to Kovan (and execute other transactions specified in the deploy script)
+`yarn deploy --network kovan`
+
+# Testing
+```
+cd packages/hardhat
+yarn run test
+```
 
