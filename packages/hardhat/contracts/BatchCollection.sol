@@ -26,6 +26,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     /// @dev A mapping from batchs IDs to the address that owns them. All batches have
     mapping (uint256 => address) public batchIndexToOwner;
+    mapping (string => bool) private serialNumberExist;
 
     address public contractRegistry;
     Counters.Counter private _tokenIds;
@@ -76,7 +77,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[newItemId].confirmed = false;
 
         emit BatchMinted(to, newItemId);
-        
+
         return newItemId;
     }
 
@@ -100,6 +101,9 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[tokenId].vintage = _vintage;
         nftList[tokenId].serialNumber = _serialNumber;
         nftList[tokenId].quantity = quantity;
+
+        require(checkSerialNumExists(_serialNumber)==false, "Serialnumber has already been used");
+        serialNumberExist[_serialNumber] = true;
 
         emit BatchUpdated(tokenId, _serialNumber, quantity);
     }
@@ -133,6 +137,11 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
             nftList[newItemId].quantity = quantity;
             nftList[newItemId].confirmed = false;
         }
+    
+    function checkSerialNumExists(string memory serialNo) internal view returns (bool) {
+        if (serialNumberExist[serialNo]==false) return false;
+        else return true;
+    }
 
 
     function getProjectIdent(uint256 tokenId) public view override returns (string memory) {
