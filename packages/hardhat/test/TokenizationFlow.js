@@ -100,9 +100,19 @@ describe("", () => {
 
     // Flow #2: start with empty batch
     console.log("\nConnect Project Account and mint Batch-NFT via mintBatchWithData(...)");
-    await BatchCollection.connect(enduser).mintEmptyBatch(enduser.address);
+    
     const BatchTokenId2 = 2;
     // User sends the serialnumber to Co2ken
+
+    await BatchCollection.connect(enduser).mintEmptyBatch(enduser.address);
+
+    const filter = {
+      address: BatchCollection.address,
+      fromBlock: 0,
+      toBlock: 100,
+      topics: [BatchCollection.interface.events.BatchMinted.topic]
+    };
+    const logs = await provider.getLogs(filter);
 
     await BatchCollection.connect(owner).updateBatchWithData(
       BatchTokenId2,
