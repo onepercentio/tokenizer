@@ -1,7 +1,5 @@
 import { BigInt, Address } from "@graphprotocol/graph-ts"
-import {
-  BatchMinted
-} from "../generated/BatchCollection/BatchCollection"
+import {  BatchMinted } from "../generated/BatchCollection/BatchCollection"
 import { Batch, Sender } from "../generated/schema"
 
 export function handleMintBatch(event: BatchMinted): void {
@@ -24,6 +22,7 @@ export function handleMintBatch(event: BatchMinted): void {
   //Not sure the even needs to 
   //batch.address = event.params.address
   //batch.address = event.params.sender
+  batch.tokenId = event.params.tokenId
   batch.minter = senderString
   batch.status = "initialized"
   batch.owner = event.params.sender

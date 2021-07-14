@@ -65,7 +65,7 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
 
     // Permissionlessly mint empty BatchNFTs
     // To be updated by verifier/owner after SerialNumber has been provided
-    function mintEmptyBatch (address to) public {
+    function mintEmptyBatch (address to) public returns (uint) {
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
         // console.log("minting BRC to ", to);
@@ -76,6 +76,8 @@ contract BatchCollection is ERC721, ERC721Enumerable, Ownable, IBatchCollection 
         nftList[newItemId].confirmed = false;
 
         emit BatchMinted(to, newItemId);
+        
+        return newItemId;
     }
 
 

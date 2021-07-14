@@ -3,6 +3,7 @@ type Batch @entity {
   minter: Sender!
   owner: Bytes!
   projectId: BigInt
+  tokenId: BigInt
   status: String!
   serialNumber: String
   quantity: BigInt
