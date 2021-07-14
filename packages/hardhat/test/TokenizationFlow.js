@@ -21,7 +21,7 @@ describe("", () => {
 
     // ---------------------
     // Create Blockchain Accounts;
-    const [owner, project, enduser] = await ethers.getSigners();
+    const [owner, project, enduser, enduser2] = await ethers.getSigners();
     console.log("\n------ ACCOUNTs --------");
     console.log("Owner:", owner.address);
     console.log("Project:", project.address);
@@ -111,7 +111,18 @@ describe("", () => {
       serialNumber,
       quantity2
     );
-    
+
+    await BatchCollection.connect(enduser2).mintEmptyBatch(enduser2.address);
+    const BatchTokenId3 = 3;
+    // User sends the serialnumber to Co2ken
+
+    await expect(BatchCollection.connect(owner).updateBatchWithData(
+      BatchTokenId3,
+      projectId,
+      vintage20,
+      serialNumber,
+      quantity2
+    )).to.be.reverted;
 
     // Test that BatchNFT owner is the project account
     expect(await BatchCollection.ownerOf(BatchTokenId1)).to.equal(project.address);
