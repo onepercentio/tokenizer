@@ -24,7 +24,9 @@ describe("", () => {
     const [owner, project, enduser, enduser2] = await ethers.getSigners();
     console.log("\n------ ACCOUNTs --------");
     console.log("Owner:", owner.address);
-    console.log("Project:", project.address);
+    console.log("enduser:", enduser.address);
+    console.log("enduser2:", enduser2.address);
+
 
 
     // ---------------------
@@ -87,6 +89,7 @@ describe("", () => {
     // ---------------------
     // BatchNFT minting
 
+    const BatchTokenId1 = 1;
     // Flow #1 (legacy): mintBatchWithData, user already has the serialnumber
     // console.log("\nConnect Project Account and mint Batch-NFT via mintBatchWithData(...)");
     await BatchCollection.connect(project).mintBatchWithData(
@@ -96,23 +99,19 @@ describe("", () => {
       serialNumber,
       quantity1
     );
-    const BatchTokenId1 = 1;
 
     // Flow #2: start with empty batch
     console.log("\nConnect Project Account and mint Batch-NFT via mintBatchWithData(...)");
     
     const BatchTokenId2 = 2;
     // User sends the serialnumber to Co2ken
+    await expect(BatchCollection.connect(enduser).mintEmptyBatch(enduser.address))
+    .to.emit(BatchCollection, 'BatchMinted')
+    .withArgs(enduser.address, BatchTokenId2);
 
-    await BatchCollection.connect(enduser).mintEmptyBatch(enduser.address);
 
-    const filter = {
-      address: BatchCollection.address,
-      fromBlock: 0,
-      toBlock: 100,
-      topics: [BatchCollection.interface.events.BatchMinted.topic]
-    };
-    const logs = await provider.getLogs(filter);
+    console.log(await BatchCollection.connect(enduser).ownerOf(BatchTokenId2));
+
 
     await BatchCollection.connect(owner).updateBatchWithData(
       BatchTokenId2,
@@ -122,8 +121,8 @@ describe("", () => {
       quantity2
     );
 
-    await BatchCollection.connect(enduser2).mintEmptyBatch(enduser2.address);
     const BatchTokenId3 = 3;
+    await BatchCollection.connect(enduser2).mintEmptyBatch(enduser2.address);
     // User sends the serialnumber to Co2ken
 
     await expect(BatchCollection.connect(owner).updateBatchWithData(
